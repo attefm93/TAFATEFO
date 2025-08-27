@@ -1,14 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 
-type Shape = 'circle' | 'triangle' | 'square';
-
 interface Node {
   x: number;
   y: number;
   vx: number;
   vy: number;
   connections: number[];
-  shape: Shape;
 }
 
 const AnimatedBackground: React.FC = () => {
@@ -51,8 +48,6 @@ const AnimatedBackground: React.FC = () => {
       nodesRef.current = [];
 
       for (let i = 0; i < nodeCount; i++) {
-        const r = Math.random();
-        const shape: Shape = r < 0.34 ? 'circle' : r < 0.67 ? 'triangle' : 'square';
         // Pixels per second speeds for consistent motion regardless of FPS
         const minSpeed = isMobileMode ? 60 : 110;
         const maxSpeed = isMobileMode ? 120 : 200;
@@ -64,7 +59,6 @@ const AnimatedBackground: React.FC = () => {
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           connections: [],
-          shape,
         });
       }
     };
@@ -83,8 +77,7 @@ const AnimatedBackground: React.FC = () => {
     };
 
     const drawConnections = () => {
-      // Skip heavy O(n^2) lines on mobile mode or when too many nodes
-      if (isMobileMode) return;
+      // Draw on all devices, but skip when too many nodes for safety
       if (nodesRef.current.length > 120) return;
       const maxDistance = 220;
       for (let i = 0; i < nodesRef.current.length; i++) {
@@ -95,13 +88,17 @@ const AnimatedBackground: React.FC = () => {
           const dy = nodeA.y - nodeB.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           if (distance < maxDistance) {
-            const opacity = (1 - distance / maxDistance) * 0.5;
-            ctx.strokeStyle = `rgba(59,130,246,${opacity})`;
-            ctx.lineWidth = 1.5;
+            const t = (1 - distance / maxDistance);
+            const opacity = t * 0.6;
+            ctx.strokeStyle = `rgba(96,165,250,${opacity})`;
+            ctx.lineWidth = 1.2 + t * 0.6;
+            ctx.shadowColor = 'rgba(59,130,246,0.45)';
+            ctx.shadowBlur = 6 + t * 6;
             ctx.beginPath();
             ctx.moveTo(nodeA.x, nodeA.y);
             ctx.lineTo(nodeB.x, nodeB.y);
             ctx.stroke();
+            ctx.shadowBlur = 0;
           }
         }
       }
@@ -109,29 +106,17 @@ const AnimatedBackground: React.FC = () => {
 
     const drawNodes = () => {
       nodesRef.current.forEach(node => {
-        // Neon blue palette
         const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 12);
-        gradient.addColorStop(0, 'rgba(191, 219, 254, 1)');    // blue-100 core
-        gradient.addColorStop(0.4, 'rgba(96, 165, 250, 0.9)');  // blue-400 ring
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.18)');   // blue-500 falloff
+        gradient.addColorStop(0, 'rgba(191, 219, 254, 1)');
+        gradient.addColorStop(0.45, 'rgba(96, 165, 250, 0.95)');
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.22)');
 
         ctx.fillStyle = gradient;
         ctx.shadowColor = 'rgba(59, 130, 246, 0.8)';
-        ctx.shadowBlur = 14;
-
-        const size = 4;
+        ctx.shadowBlur = 12;
+        const size = 3.5;
         ctx.beginPath();
-        if (node.shape === 'circle') {
-          ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
-        } else if (node.shape === 'triangle') {
-          const h = size * 2;
-          ctx.moveTo(node.x, node.y - h * 0.6);
-          ctx.lineTo(node.x - size, node.y + h * 0.4);
-          ctx.lineTo(node.x + size, node.y + h * 0.4);
-          ctx.closePath();
-        } else {
-          ctx.rect(node.x - size, node.y - size, size * 2, size * 2);
-        }
+        ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
       });
