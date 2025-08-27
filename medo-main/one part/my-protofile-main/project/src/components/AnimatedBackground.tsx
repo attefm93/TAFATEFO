@@ -85,36 +85,41 @@ const AnimatedBackground: React.FC = () => {
           const distance = Math.sqrt(dx * dx + dy * dy);
           if (distance < maxDistance) {
             const t = (1 - distance / maxDistance);
-            const opacity = t * 0.6;
-            ctx.strokeStyle = `rgba(147,197,253,${opacity})`;
-            ctx.lineWidth = 1.2 + t * 0.8;
+            const opacity = t * 0.75;
+            // Neon blue links with soft glow
+            ctx.strokeStyle = `rgba(96,165,250,${opacity})`;
+            ctx.lineWidth = 1.0 + t * 1.1;
+            ctx.shadowColor = 'rgba(59,130,246,0.55)';
+            ctx.shadowBlur = 8 + t * 10;
             ctx.beginPath();
             ctx.moveTo(nodeA.x, nodeA.y);
             ctx.lineTo(nodeB.x, nodeB.y);
             ctx.stroke();
+            ctx.shadowBlur = 0;
           }
         }
       }
     };
 
     const drawNodes = () => {
-      const time = performance.now() * 0.003;
+      const time = performance.now() * 0.004;
       nodesRef.current.forEach(node => {
         const pulse = (Math.sin(time + (node.x + node.y) * 0.002) + 1) * 0.5; // 0..1
-        const radius = 3.5 + pulse * 2.2;
-        const glow = 14 + pulse * 18;
+        const radius = 3.2 + pulse * 2.0;
+        const glow = 16 + pulse * 20;
         const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 14 + pulse * 10);
-        gradient.addColorStop(0, 'rgba(250, 204, 21, 1)');
-        gradient.addColorStop(0.45, 'rgba(59, 130, 246, 0.9)');
-        gradient.addColorStop(1, 'rgba(236, 72, 153, 0.35)');
+        // Neon blue palette
+        gradient.addColorStop(0, 'rgba(191, 219, 254, 1)');    // blue-100 core
+        gradient.addColorStop(0.4, 'rgba(96, 165, 250, 0.95)'); // blue-400 ring
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.2)');    // blue-500 falloff
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Stronger glow
-        ctx.shadowColor = 'rgba(250, 204, 21, 0.95)';
+        // Stronger neon glow in blue
+        ctx.shadowColor = 'rgba(59, 130, 246, 0.95)';
         ctx.shadowBlur = glow;
         ctx.beginPath();
         ctx.arc(node.x, node.y, Math.max(2, radius * 0.6), 0, Math.PI * 2);
