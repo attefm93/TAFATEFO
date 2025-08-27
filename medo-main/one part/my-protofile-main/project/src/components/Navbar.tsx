@@ -56,6 +56,16 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+    } finally {
+      // Optimistically update UI even if event is delayed
+      setIsLoggedIn(false);
+      setAvatarUrl(null);
+    }
+  };
+
   useEffect(() => {
     const onAdmin = (e: any) => setIsAdmin(!!e?.detail?.isAdmin);
     window.addEventListener('admin:changed', onAdmin);
@@ -99,7 +109,7 @@ const Navbar: React.FC = () => {
                     <img src={avatarUrl} alt="avatar" className="w-8 h-8 rounded-full border border-white/20" />
                   )}
                   <button
-                    onClick={async () => { await supabase.auth.signOut(); }}
+                    onClick={handleSignOut}
                     className="px-4 py-2 rounded-full border border-white/20 text-white/90 hover:text-white hover:border-white/30 bg-white/5"
                   >
                     Sign out
@@ -125,7 +135,7 @@ const Navbar: React.FC = () => {
                 <li className="flex items-center gap-3 py-1">
                   {avatarUrl && <img src={avatarUrl} alt="avatar" className="w-8 h-8 rounded-full border border-white/20" />}
                   {isLoggedIn && (
-                    <button onClick={async () => { await supabase.auth.signOut(); setOpen(false); }} className="px-4 py-2 rounded-full border border-white/20 text-white/90 hover:text-white hover:border-white/30 bg-white/5">
+                    <button onClick={() => { handleSignOut(); setOpen(false); }} className="px-4 py-2 rounded-full border border-white/20 text-white/90 hover:text-white hover:border-white/30 bg-white/5">
                       Sign out
                     </button>
                   )}
