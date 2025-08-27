@@ -79,9 +79,10 @@ const AnimatedBackground: React.FC = () => {
           if (distance < maxDistance) {
             const opacity = (1 - distance / maxDistance) * 0.6;
             const gradient = ctx.createLinearGradient(nodeA.x, nodeA.y, nodeB.x, nodeB.y);
-            gradient.addColorStop(0, `rgba(16, 185, 129, ${opacity})`);
-            gradient.addColorStop(0.5, `rgba(59, 130, 246, ${opacity})`);
-            gradient.addColorStop(1, `rgba(236, 72, 153, ${opacity})`);
+            // Blue neon-only palette
+            gradient.addColorStop(0, `rgba(147, 197, 253, ${opacity})`); // blue-300
+            gradient.addColorStop(0.5, `rgba(59, 130, 246, ${opacity})`); // blue-500
+            gradient.addColorStop(1, `rgba(29, 78, 216, ${opacity})`); // blue-700
             ctx.strokeStyle = gradient;
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -96,9 +97,9 @@ const AnimatedBackground: React.FC = () => {
     const drawNodes = () => {
       nodesRef.current.forEach(node => {
         const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 12);
-        gradient.addColorStop(0, 'rgba(16, 185, 129, 1)');
-        gradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.8)');
-        gradient.addColorStop(1, 'rgba(236, 72, 153, 0.3)');
+        gradient.addColorStop(0, 'rgba(147, 197, 253, 1)');   // blue-300 center
+        gradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.85)'); // blue-500 mid
+        gradient.addColorStop(1, 'rgba(30, 64, 175, 0.25)');    // blue-800 outer
 
         ctx.fillStyle = gradient;
         const size = 4;
@@ -107,7 +108,7 @@ const AnimatedBackground: React.FC = () => {
         ctx.fill();
 
         // Glow effect
-        ctx.shadowColor = '#10b981';
+        ctx.shadowColor = '#3b82f6'; // blue-500
         ctx.shadowBlur = 20;
         ctx.beginPath();
         ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
