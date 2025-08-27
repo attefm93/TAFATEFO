@@ -26,6 +26,7 @@ const variants: Variant[] = ['green', 'pink', 'blue'];
 const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [modeIdx, setModeIdx] = useState(0);
+  const [isAdmin, setIsAdmin] = useState<boolean>(typeof window !== 'undefined' && localStorage.getItem('isAdmin') === '1');
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -33,6 +34,18 @@ const Navbar: React.FC = () => {
     }, 1500); // rotate between green, pink, blue every 1.5s
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    const onAdmin = (e: any) => setIsAdmin(!!e?.detail?.isAdmin);
+    window.addEventListener('admin:changed', onAdmin);
+    return () => window.removeEventListener('admin:changed', onAdmin);
+  }, []);
+
+  const exitAdmin = () => {
+    localStorage.removeItem('isAdmin');
+    window.dispatchEvent(new CustomEvent('admin:changed', { detail: { isAdmin: false } }));
+    setIsAdmin(false);
+  };
 
   const mode = variants[modeIdx];
 
@@ -59,6 +72,16 @@ const Navbar: React.FC = () => {
                   <NavNeonButton to={item.to} variant={mode as Variant}>{item.label}</NavNeonButton>
                 </li>
               ))}
+              {isAdmin && (
+                <li>
+                  <button onClick={exitAdmin} className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-red-400/20 to-red-500/20 border-2 border-red-400/50 text-red-300">
+                    <span className="btn-gleam btn-gleam-pink" aria-hidden="true" />
+                    <span className="btn-beam" aria-hidden="true" />
+                    <span className="relative z-10">Exit Admin</span>
+                    <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-red-400/50 to-red-500/50" aria-hidden="true" />
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -72,6 +95,16 @@ const Navbar: React.FC = () => {
                     </NavNeonButton>
                   </li>
                 ))}
+                {isAdmin && (
+                  <li>
+                    <button onClick={() => { exitAdmin(); setOpen(false); }} className="w-full justify-center group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-red-400/20 to-red-500/20 border-2 border-red-400/50 text-red-300">
+                      <span className="btn-gleam btn-gleam-pink" aria-hidden="true" />
+                      <span className="btn-beam" aria-hidden="true" />
+                      <span className="relative z-10">Exit Admin</span>
+                      <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-red-400/50 to-red-500/50" aria-hidden="true" />
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
           )}

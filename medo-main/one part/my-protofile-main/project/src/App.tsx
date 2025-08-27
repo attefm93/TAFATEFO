@@ -157,6 +157,23 @@ function Works() {
               {it.image_url && <img src={it.image_url} alt={it.title} className="w-full h-48 object-cover rounded-lg mb-3" />}
               <h4 className="text-white font-semibold">{it.title}</h4>
               {it.description && <p className="text-white/70 text-sm mt-1">{it.description}</p>}
+              {isAdmin && (
+                <div className="mt-3 flex gap-2">
+                  <button onClick={async () => {
+                    const newTitle = prompt('Edit title', it.title) || it.title;
+                    const newDesc = prompt('Edit description', it.description || '') || it.description;
+                    const { error } = await supabase.from('works').update({ title: newTitle, description: newDesc }).eq('id', it.id);
+                    if (error) return alert('Update failed: ' + error.message);
+                    setItems((arr) => arr.map((x) => x.id === it.id ? { ...x, title: newTitle, description: newDesc } : x));
+                  }} className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm">Edit</button>
+                  <button onClick={async () => {
+                    if (!confirm('Delete this work?')) return;
+                    const { error } = await supabase.from('works').delete().eq('id', it.id);
+                    if (error) return alert('Delete failed: ' + error.message);
+                    setItems((arr) => arr.filter((x) => x.id !== it.id));
+                  }} className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm">Delete</button>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -316,6 +333,23 @@ function Certification() {
               {it.image_url && <img src={it.image_url} alt={it.name} className="w-full h-48 object-cover rounded-lg mb-3" />}
               <h4 className="text-white font-semibold">{it.name}</h4>
               {it.info && <p className="text-white/70 text-sm mt-1">{it.info}</p>}
+              {isAdmin && (
+                <div className="mt-3 flex gap-2">
+                  <button onClick={async () => {
+                    const newName = prompt('Edit name', it.name) || it.name;
+                    const newInfo = prompt('Edit info', it.info || '') || it.info;
+                    const { error } = await supabase.from('certifications').update({ name: newName, info: newInfo }).eq('id', it.id);
+                    if (error) return alert('Update failed: ' + error.message);
+                    setItems((arr) => arr.map((x) => x.id === it.id ? { ...x, name: newName, info: newInfo } : x));
+                  }} className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm">Edit</button>
+                  <button onClick={async () => {
+                    if (!confirm('Delete this certification?')) return;
+                    const { error } = await supabase.from('certifications').delete().eq('id', it.id);
+                    if (error) return alert('Delete failed: ' + error.message);
+                    setItems((arr) => arr.filter((x) => x.id !== it.id));
+                  }} className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm">Delete</button>
+                </div>
+              )}
             </div>
           ))}
         </div>
