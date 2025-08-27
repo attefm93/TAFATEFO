@@ -58,11 +58,17 @@ const Navbar: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch (e) {
+      // noop
     } finally {
-      // Optimistically update UI even if event is delayed
+      // clear admin state as well
+      localStorage.removeItem('isAdmin');
+      window.dispatchEvent(new CustomEvent('admin:changed', { detail: { isAdmin: false } }));
       setIsLoggedIn(false);
       setAvatarUrl(null);
+      // Ensure any stale UI/session is gone
+      setTimeout(() => { window.location.href = '/'; }, 50);
     }
   };
 
