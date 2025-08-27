@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NavNeonButton from './NavNeonButton';
 import LogoMark from './LogoMark';
+import { supabase } from '../lib/supabaseClient';
 
 type Variant = 'green' | 'pink' | 'blue';
 
@@ -27,12 +28,32 @@ const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [modeIdx, setModeIdx] = useState(0);
   const [isAdmin, setIsAdmin] = useState<boolean>(typeof window !== 'undefined' && localStorage.getItem('isAdmin') === '1');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const id = setInterval(() => {
       setModeIdx((i) => (i + 1) % variants.length);
     }, 1500);
     return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const syncUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+      if (!mounted) return;
+      setIsLoggedIn(!!user);
+      const meta: any = user?.user_metadata || {};
+      setAvatarUrl(meta.avatar_url || meta.picture || null);
+    };
+    syncUser();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => syncUser());
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -72,6 +93,17 @@ const Navbar: React.FC = () => {
                   <NavNeonButton to={item.to} variant={mode as Variant}>{item.label}</NavNeonButton>
                 </li>
               ))}
+              <li className="flex items-center gap-2 pl-2">
+                {isLoggedIn && (
+                  <span className="inline-flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                    <span className="text-white/80 text-xs">Logged in</span>
+                  </span>
+                )}
+                {avatarUrl && (
+                  <img src={avatarUrl} alt="avatar" className="w-7 h-7 rounded-full border border-white/20" />
+                )}
+              </li>
               {isAdmin && (
                 <li>
                   <button onClick={exitAdmin} className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-red-400/20 to-red-500/20 border-2 border-red-400/50 text-red-300">
@@ -88,6 +120,11 @@ const Navbar: React.FC = () => {
           {open && (
             <div className="md:hidden px-4 pb-4">
               <ul className="grid gap-2">
+                <li className="flex items-center gap-3 py-1">
+                  {isLoggedIn && <span className="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(34,197,94,0.8)]" />}
+                  {avatarUrl && <img src={avatarUrl} alt="avatar" className="w-8 h-8 rounded-full border border-white/20" />}
+                  {isLoggedIn && <span className="text-white/80 text-sm">Logged in</span>}
+                </li>
                 {baseItems.map((item) => (
                   <li key={item.to}>
                     <NavNeonButton to={item.to} variant={mode as Variant} className="w-full justify-center" onClick={() => setOpen(false)}>

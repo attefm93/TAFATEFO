@@ -370,9 +370,9 @@ function Rating() {
         onMouseLeave={() => setHover(null)}
         onClick={() => setStars(index)}
         aria-label={`Rate ${index} star`}
-        className={"mr-2 transition transform " + (active ? "glow-strong-yellow" : "")}
+        className={"transition transform " + (active ? "glow-strong-yellow" : "")}
       >
-        <svg className={(active ? "animate-spin-fast " : "") + "star-3d"} width="52" height="52" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+        <svg className={(active ? "animate-spin-fast " : "") + "star-3d"} width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
           <defs>
             <radialGradient id="starSpecularGradient" cx="30%" cy="30%" r="70%">
               <stop offset="0%" stop-color="#fff59d"/>
@@ -393,9 +393,11 @@ function Rating() {
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Rating</h3>
         <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const feedback = String(form.get('feedback')||''); try { const { error } = await supabase.from('ratings').insert({ stars, feedback }); if (error) throw error; alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } }} className="grid gap-4 max-w-2xl">
-          <div className="flex items-center mb-2">
+          <div className="orbit">
             {[1,2,3,4,5].map((i) => (
-              <Star key={i} index={i} />
+              <div key={i} className="orbit-item orbit-spin" style={{ transform: `rotate(${(i-1)*72}deg)` }}>
+                <Star index={i} />
+              </div>
             ))}
           </div>
           <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg neon-input" />
