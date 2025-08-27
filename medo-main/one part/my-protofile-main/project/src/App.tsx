@@ -391,6 +391,7 @@ function Rating() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(localStorage.getItem('isAdmin') === '1');
   React.useEffect(() => {
     const load = async () => {
       try {
@@ -412,7 +413,9 @@ function Rating() {
     };
     syncAuth();
     const { data: sub } = supabase.auth.onAuthStateChange(() => syncAuth());
-    return () => { mounted = false; sub.subscription.unsubscribe(); };
+    const onAdmin = (e: any) => setIsAdmin(!!e?.detail?.isAdmin);
+    window.addEventListener('admin:changed', onAdmin);
+    return () => { mounted = false; sub.subscription.unsubscribe(); window.removeEventListener('admin:changed', onAdmin); };
   }, []);
   const Star = ({ index }: { index: number }) => {
     const active = (hover ?? stars) >= index;
@@ -499,6 +502,33 @@ function Rating() {
                     </div>
                     {r.feedback && <p className="text-white/80 text-sm mt-1 break-words">{r.feedback}</p>}
                     <p className="text-white/40 text-xs mt-1">{new Date(r.created_at).toLocaleString()}</p>
+                    {isAdmin && (
+                      <div className="mt-3 flex gap-2">
+                        <button onClick={async () => {
+                          const newStarsStr = prompt('Edit stars (1-5)', String(r.stars || 5));
+                          if (!newStarsStr) return;
+                          const newStars = Math.max(1, Math.min(5, parseInt(newStarsStr, 10) || 5));
+                          const newFeedback = prompt('Edit feedback', r.feedback || '') ?? r.feedback || '';
+                          try {
+                            const { error } = await supabase.from('ratings').update({ stars: newStars, feedback: newFeedback }).eq('id', r.id);
+                            if (error) return alert('Update failed: ' + error.message);
+                            setItems((arr) => arr.map((x) => x.id === r.id ? { ...x, stars: newStars, feedback: newFeedback } : x));
+                          } catch (e: any) {
+                            alert('Failed: ' + (e?.message || String(e)));
+                          }
+                        }} className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm">Edit</button>
+                        <button onClick={async () => {
+                          if (!confirm('Delete this rating?')) return;
+                          try {
+                            const { error } = await supabase.from('ratings').delete().eq('id', r.id);
+                            if (error) return alert('Delete failed: ' + error.message);
+                            setItems((arr) => arr.filter((x) => x.id !== r.id));
+                          } catch (e: any) {
+                            alert('Failed: ' + (e?.message || String(e)));
+                          }
+                        }} className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm">Delete</button>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
