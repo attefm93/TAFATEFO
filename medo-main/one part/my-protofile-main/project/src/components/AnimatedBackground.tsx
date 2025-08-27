@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 
+type Shape = 'circle' | 'triangle' | 'square';
+
 interface Node {
   x: number;
   y: number;
   vx: number;
   vy: number;
   connections: number[];
+  shape: Shape;
 }
 
 const AnimatedBackground: React.FC = () => {
@@ -48,6 +51,8 @@ const AnimatedBackground: React.FC = () => {
       nodesRef.current = [];
 
       for (let i = 0; i < nodeCount; i++) {
+        const r = Math.random();
+        const shape: Shape = r < 0.34 ? 'circle' : r < 0.67 ? 'triangle' : 'square';
         // Pixels per second speeds for consistent motion regardless of FPS
         const minSpeed = isMobileMode ? 60 : 110;
         const maxSpeed = isMobileMode ? 120 : 200;
@@ -59,6 +64,7 @@ const AnimatedBackground: React.FC = () => {
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           connections: [],
+          shape,
         });
       }
     };
@@ -103,18 +109,29 @@ const AnimatedBackground: React.FC = () => {
 
     const drawNodes = () => {
       nodesRef.current.forEach(node => {
+        // Neon blue palette
         const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 12);
-        gradient.addColorStop(0, 'rgba(16, 185, 129, 1)');
-        gradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.8)');
-        gradient.addColorStop(1, 'rgba(236, 72, 153, 0.3)');
+        gradient.addColorStop(0, 'rgba(191, 219, 254, 1)');    // blue-100 core
+        gradient.addColorStop(0.4, 'rgba(96, 165, 250, 0.9)');  // blue-400 ring
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.18)');   // blue-500 falloff
 
         ctx.fillStyle = gradient;
-        ctx.shadowColor = '#10b981';
-        ctx.shadowBlur = 18;
+        ctx.shadowColor = 'rgba(59, 130, 246, 0.8)';
+        ctx.shadowBlur = 14;
 
         const size = 4;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
+        if (node.shape === 'circle') {
+          ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
+        } else if (node.shape === 'triangle') {
+          const h = size * 2;
+          ctx.moveTo(node.x, node.y - h * 0.6);
+          ctx.lineTo(node.x - size, node.y + h * 0.4);
+          ctx.lineTo(node.x + size, node.y + h * 0.4);
+          ctx.closePath();
+        } else {
+          ctx.rect(node.x - size, node.y - size, size * 2, size * 2);
+        }
         ctx.fill();
         ctx.shadowBlur = 0;
       });
