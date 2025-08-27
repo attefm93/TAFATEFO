@@ -508,7 +508,7 @@ function Rating() {
                           const newStarsStr = prompt('Edit stars (1-5)', String(r.stars || 5));
                           if (!newStarsStr) return;
                           const newStars = Math.max(1, Math.min(5, parseInt(newStarsStr, 10) || 5));
-                          const newFeedback = prompt('Edit feedback', r.feedback || '') ?? r.feedback || '';
+                          const newFeedback = (prompt('Edit feedback', r.feedback || '') ?? r.feedback) || '';
                           try {
                             const { error } = await supabase.from('ratings').update({ stars: newStars, feedback: newFeedback }).eq('id', r.id);
                             if (error) return alert('Update failed: ' + error.message);
