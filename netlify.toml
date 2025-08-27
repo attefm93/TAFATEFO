@@ -1,0 +1,12 @@
+[build]
+  command = "cd medo-main && npm run build"
+  publish = "medo-main/one part/my-protofile-main/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
