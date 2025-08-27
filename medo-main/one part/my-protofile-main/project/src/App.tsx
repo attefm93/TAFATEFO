@@ -586,28 +586,19 @@ function Rating() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Rating</h3>
-        <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const feedback = String(form.get('feedback')||''); if (stars < 1) { alert('Please select at least 1 star.'); return; } try { setSubmitting(true); const { data: sessionData } = await supabase.auth.getSession(); if (!sessionData.session?.user) { alert('Please login to submit a rating.'); return; } const user = sessionData.session.user; const meta: any = user.user_metadata || {}; const userName = meta.full_name || [meta.first_name, meta.last_name].filter(Boolean).join(' ') || user.email || 'User'; const userAvatar = meta.avatar_url || meta.picture || null; // Try extended insert first
-          let errorMsg = '';
-          {
-            const payloadExt: any = { stars, feedback, user_name: userName, user_avatar_url: userAvatar };
-            const { error: errExt } = await supabase.from('ratings').insert(payloadExt);
-            if (errExt) {
-              errorMsg = String(errExt.message || '');
-              const looksLikeMissingColumn = /column|schema|not\s+found|not\s+exist/i.test(errorMsg) && /(user_name|user_avatar_url|created_by)/i.test(errorMsg);
-              if (!looksLikeMissingColumn) throw errExt;
-              // Fallback to minimal payload if extended columns not present
-              const { error: errMin } = await supabase.from('ratings').insert({ stars, feedback });
-              if (errMin) throw errMin;
-            }
-          }
-          const { data: refreshed } = await supabase.from('ratings').select('*').order('created_at', { ascending: false }); setItems(refreshed || []); alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } finally { setSubmitting(false); } }} className="grid gap-4 max-w-2xl">
+        <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const feedback = String(form.get('feedback')||''); if (stars < 1) { alert('Please select at least 1 star.'); return; } try { setSubmitting(true); const { data: sessionData } = await supabase.auth.getSession(); if (!sessionData.session?.user) { alert('Please login to submit a rating.'); return; } const user = sessionData.session.user; const meta: any = user.user_metadata || {}; const userName = meta.full_name || [meta.first_name, meta.last_name].filter(Boolean).join(' ') || user.email || 'User'; const userAvatar = meta.avatar_url || meta.picture || null; let errorMsg = ''; { const payloadExt: any = { stars, feedback, user_name: userName, user_avatar_url: userAvatar }; const { error: errExt } = await supabase.from('ratings').insert(payloadExt); if (errExt) { errorMsg = String(errExt.message || ''); const looksLikeMissingColumn = /column|schema|not\s+found|not\s+exist/i.test(errorMsg) && /(user_name|user_avatar_url|created_by)/i.test(errorMsg); if (!looksLikeMissingColumn) throw errExt; const { error: errMin } = await supabase.from('ratings').insert({ stars, feedback }); if (errMin) throw errMin; } } const { data: refreshed } = await supabase.from('ratings').select('*').order('created_at', { ascending: false }); setItems(refreshed || []); alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } finally { setSubmitting(false); } }} className="grid gap-4 max-w-2xl card-neon p-5">
           <div className="flex items-center gap-1.5">
             {[1,2,3,4,5].map((i) => (
               <Star key={i} index={i} />
             ))}
           </div>
-          <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg neon-input" />
-          <button type="submit" disabled={!isLoggedIn || submitting || stars < 1} className="px-6 py-3 rounded-lg bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 text-white font-semibold w-max">{!isLoggedIn ? 'Login to submit' : submitting ? 'Submitting...' : 'Submit'}</button>
+          <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-blue-400/60 focus:ring-2 focus:ring-blue-400/30" />
+          <button type="submit" disabled={!isLoggedIn || submitting || stars < 1} className="group relative px-6 py-3 rounded-full font-semibold w-max bg-gradient-to-r from-blue-400/20 to-blue-500/20 hover:from-green-400/20 hover:to-green-500/20 border-2 border-blue-400/50 hover:border-green-400/50 text-blue-300 hover:text-green-300 transition">
+            <span className="btn-gleam btn-gleam-blue" aria-hidden="true" />
+            <span className="btn-beam" aria-hidden="true" />
+            <span className="relative z-10">{!isLoggedIn ? 'Login to submit' : submitting ? 'Submitting...' : 'Submit'}</span>
+            <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 bg-gradient-to-r from-blue-400/50 to-blue-500/50 group-hover:from-green-400/50 group-hover:to-green-500/50" aria-hidden="true" />
+          </button>
         </form>
         <div className="mt-10 max-w-3xl">
           <h4 className="text-2xl font-bold text-white mb-4">Recent ratings</h4>
@@ -619,11 +610,11 @@ function Rating() {
               const avatar = r.user_avatar_url || null;
               const initials = String(name).trim().split(/\s+/).slice(0,2).map((s: string) => s[0]?.toUpperCase()).join('') || 'U';
               return (
-                <div key={r.id} className="rounded-xl border border-white/10 bg-white/5 p-4 flex gap-3 items-start">
+                <div key={r.id} className="card-neon p-4 flex gap-3 items-start">
                   {avatar ? (
-                    <img src={avatar} alt={name} className="w-10 h-10 rounded-full border border-white/20 object-cover" />
+                    <img src={avatar} alt={name} className="w-10 h-10 rounded-full avatar-ring object-cover" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/80 flex items-center justify-center text-sm font-bold">{initials}</div>
+                    <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/80 flex items-center justify-center text-sm font-bold avatar-ring">{initials}</div>
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
@@ -634,33 +625,8 @@ function Rating() {
                     <p className="text-white/40 text-xs mt-1">{new Date(r.created_at).toLocaleString()}</p>
                     {isAdmin && (
                       <div className="mt-3 flex gap-2">
-                        <button onClick={async () => {
-                          const { data: sessionData } = await supabase.auth.getSession();
-                          if (!sessionData.session?.user) { alert('Please login to edit ratings.'); return; }
-                          const newStarsStr = prompt('Edit stars (1-5)', String(r.stars || 5));
-                          if (!newStarsStr) return;
-                          const newStars = Math.max(1, Math.min(5, parseInt(newStarsStr, 10) || 5));
-                          const newFeedback = (prompt('Edit feedback', r.feedback || '') ?? r.feedback) || '';
-                          try {
-                            const { error } = await supabase.from('ratings').update({ stars: newStars, feedback: newFeedback }).eq('id', r.id);
-                            if (error) return alert('Update failed: ' + error.message);
-                            setItems((arr) => arr.map((x) => x.id === r.id ? { ...x, stars: newStars, feedback: newFeedback } : x));
-                          } catch (e: any) {
-                            alert('Failed: ' + (e?.message || String(e)));
-                          }
-                        }} className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm">Edit</button>
-                        <button onClick={async () => {
-                          const { data: sessionData } = await supabase.auth.getSession();
-                          if (!sessionData.session?.user) { alert('Please login to delete ratings.'); return; }
-                          if (!confirm('Delete this rating?')) return;
-                          try {
-                            const { error } = await supabase.from('ratings').delete().eq('id', r.id);
-                            if (error) return alert('Delete failed: ' + error.message);
-                            setItems((arr) => arr.filter((x) => x.id !== r.id));
-                          } catch (e: any) {
-                            alert('Failed: ' + (e?.message || String(e)));
-                          }
-                        }} className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm">Delete</button>
+                        <button onClick={async () => { const { data: sessionData } = await supabase.auth.getSession(); if (!sessionData.session?.user) { alert('Please login to edit ratings.'); return; } const newStarsStr = prompt('Edit stars (1-5)', String(r.stars || 5)); if (!newStarsStr) return; const newStars = Math.max(1, Math.min(5, parseInt(newStarsStr, 10) || 5)); const newFeedback = (prompt('Edit feedback', r.feedback || '') ?? r.feedback) || ''; try { const { error } = await supabase.from('ratings').update({ stars: newStars, feedback: newFeedback }).eq('id', r.id); if (error) return alert('Update failed: ' + error.message); setItems((arr) => arr.map((x) => x.id === r.id ? { ...x, stars: newStars, feedback: newFeedback } : x)); } catch (e: any) { alert('Failed: ' + (e?.message || String(e))); } }} className="px-3 py-1.5 rounded-full bg-blue-600 hover:bg-green-600 text-white text-sm">Edit</button>
+                        <button onClick={async () => { const { data: sessionData } = await supabase.auth.getSession(); if (!sessionData.session?.user) { alert('Please login to delete ratings.'); return; } if (!confirm('Delete this rating?')) return; try { const { error } = await supabase.from('ratings').delete().eq('id', r.id); if (error) return alert('Delete failed: ' + error.message); setItems((arr) => arr.filter((x) => x.id !== r.id)); } catch (e: any) { alert('Failed: ' + (e?.message || String(e))); } }} className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm border border-white/20">Delete</button>
                       </div>
                     )}
                   </div>
