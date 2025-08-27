@@ -154,7 +154,7 @@ function Works() {
           {!loadingList && items.length === 0 && <p className="text-white/60">No works yet.</p>}
           {items.map((it) => (
             <div key={it.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
-              {it.image_url && <img src={it.image_url} alt={it.title} className="w-full h-48 object-cover rounded-lg mb-3" />}
+              {it.image_url && <img loading="lazy" src={it.image_url} alt={it.title} className="w-full h-48 object-cover rounded-lg mb-3" />}
               <h4 className="text-white font-semibold">{it.title}</h4>
               {it.description && <p className="text-white/70 text-sm mt-1">{it.description}</p>}
               {isAdmin && (
@@ -330,7 +330,7 @@ function Certification() {
           {!loadingList && items.length === 0 && <p className="text-white/60">No certifications yet.</p>}
           {items.map((it) => (
             <div key={it.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
-              {it.image_url && <img src={it.image_url} alt={it.name} className="w-full h-48 object-cover rounded-lg mb-3" />}
+              {it.image_url && <img loading="lazy" src={it.image_url} alt={it.name} className="w-full h-48 object-cover rounded-lg mb-3" />}
               <h4 className="text-white font-semibold">{it.name}</h4>
               {it.info && <p className="text-white/70 text-sm mt-1">{it.info}</p>}
               {isAdmin && (

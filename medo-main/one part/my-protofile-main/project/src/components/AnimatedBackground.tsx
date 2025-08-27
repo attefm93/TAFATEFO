@@ -21,10 +21,18 @@ const AnimatedBackground: React.FC = () => {
     if (!ctx) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isSmallScreen = window.matchMedia('(max-width: 767px)').matches;
+    const deviceMem = (navigator as any).deviceMemory || 4;
+    const isLowPower = deviceMem <= 3;
+    const isMobileMode = isSmallScreen || isLowPower;
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobileMode ? 1 : 2);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = '100vw';
+      canvas.style.height = '100vh';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     const createNodes = () => {
@@ -33,9 +41,9 @@ const AnimatedBackground: React.FC = () => {
         return;
       }
 
-      // Denser effect: more nodes
-      const baseCount = Math.min(260, Math.floor((canvas.width * canvas.height) / 7000));
-      const maxForSmallScreens = window.innerWidth < 768 ? 120 : 260;
+      // Mobile-friendly: far fewer nodes, lighter motion
+      const baseCount = Math.min(220, Math.floor((canvas.width * canvas.height) / 9000));
+      const maxForSmallScreens = isMobileMode ? 28 : 160;
       const nodeCount = Math.min(maxForSmallScreens, baseCount);
       nodesRef.current = [];
 
@@ -43,9 +51,9 @@ const AnimatedBackground: React.FC = () => {
         nodesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          // Faster movement as requested
-          vx: (Math.random() - 0.5) * 5.0,
-          vy: (Math.random() - 0.5) * 5.0,
+          // Slower movement on mobile to reduce CPU/GPU
+          vx: (Math.random() - 0.5) * (isMobileMode ? 1.4 : 3.2),
+          vy: (Math.random() - 0.5) * (isMobileMode ? 1.4 : 3.2),
           connections: []
         });
       }
@@ -65,27 +73,20 @@ const AnimatedBackground: React.FC = () => {
     };
 
     const drawConnections = () => {
-      // More connections for a denser mesh
-      const maxDistance = 260;
-      
+      // Skip heavy O(n^2) lines on mobile mode for better performance
+      if (isMobileMode) return;
+      const maxDistance = 220;
       for (let i = 0; i < nodesRef.current.length; i++) {
         for (let j = i + 1; j < nodesRef.current.length; j++) {
           const nodeA = nodesRef.current[i];
           const nodeB = nodesRef.current[j];
-          
-          const distance = Math.sqrt(
-            Math.pow(nodeA.x - nodeB.x, 2) + Math.pow(nodeA.y - nodeB.y, 2)
-          );
-
+          const dx = nodeA.x - nodeB.x;
+          const dy = nodeA.y - nodeB.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
           if (distance < maxDistance) {
-            const opacity = (1 - distance / maxDistance) * 0.6;
-            const gradient = ctx.createLinearGradient(nodeA.x, nodeA.y, nodeB.x, nodeB.y);
-            gradient.addColorStop(0, `rgba(16, 185, 129, ${opacity})`);
-            gradient.addColorStop(0.5, `rgba(59, 130, 246, ${opacity})`);
-            gradient.addColorStop(1, `rgba(236, 72, 153, ${opacity})`);
-
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 2;
+            const opacity = (1 - distance / maxDistance) * 0.5;
+            ctx.strokeStyle = `rgba(59,130,246,${opacity})`;
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(nodeA.x, nodeA.y);
             ctx.lineTo(nodeB.x, nodeB.y);
@@ -117,7 +118,17 @@ const AnimatedBackground: React.FC = () => {
       });
     };
 
-    const animate = () => {
+    let last = 0;
+    const animate = (ts = 0) => {
+      // 30fps throttle on mobile
+      if (isMobileMode) {
+        const dt = ts - last;
+        if (dt < 33) {
+          animationRef.current = requestAnimationFrame(animate);
+          return;
+        }
+        last = ts;
+      }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       if (!prefersReducedMotion) {
@@ -140,10 +151,19 @@ const AnimatedBackground: React.FC = () => {
       createNodes();
     };
 
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden' && animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      } else if (document.visibilityState === 'visible') {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
     window.addEventListener('resize', handleResize);
+    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', onVisibility);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
