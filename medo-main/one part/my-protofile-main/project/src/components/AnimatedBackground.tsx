@@ -27,7 +27,8 @@ const AnimatedBackground: React.FC = () => {
     const isMobileMode = isSmallScreen || isLowPower;
 
     const resizeCanvas = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, isMobileMode ? 1 : 2);
+      // Cap DPR to reduce GPU load
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobileMode ? 1 : 1.5);
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
       canvas.style.width = '100vw';
@@ -42,8 +43,8 @@ const AnimatedBackground: React.FC = () => {
       }
 
       // Mobile-friendly: far fewer nodes, lighter motion
-      const baseCount = Math.min(320, Math.floor((canvas.width * canvas.height) / 7000));
-      const maxForSmallScreens = isMobileMode ? 40 : 240;
+      const baseCount = Math.min(220, Math.floor((canvas.width * canvas.height) / 11000));
+      const maxForSmallScreens = isMobileMode ? 26 : 160;
       const nodeCount = Math.min(maxForSmallScreens, baseCount);
       nodesRef.current = [];
 
@@ -51,9 +52,9 @@ const AnimatedBackground: React.FC = () => {
         nodesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          // Slightly faster movement
-          vx: (Math.random() - 0.5) * (isMobileMode ? 2.0 : 4.2),
-          vy: (Math.random() - 0.5) * (isMobileMode ? 2.0 : 4.2),
+          // Moderate movement speed for better performance
+          vx: (Math.random() - 0.5) * (isMobileMode ? 1.2 : 2.6),
+          vy: (Math.random() - 0.5) * (isMobileMode ? 1.2 : 2.6),
           connections: []
         });
       }
@@ -73,9 +74,10 @@ const AnimatedBackground: React.FC = () => {
     };
 
     const drawConnections = () => {
-      // Skip heavy O(n^2) lines on mobile mode for better performance
+      // Skip heavy O(n^2) lines on mobile or when too many nodes
       if (isMobileMode) return;
-      const maxDistance = 240;
+      if (nodesRef.current.length > 120) return;
+      const maxDistance = 200;
       for (let i = 0; i < nodesRef.current.length; i++) {
         for (let j = i + 1; j < nodesRef.current.length; j++) {
           const nodeA = nodesRef.current[i];
@@ -85,41 +87,38 @@ const AnimatedBackground: React.FC = () => {
           const distance = Math.sqrt(dx * dx + dy * dy);
           if (distance < maxDistance) {
             const t = (1 - distance / maxDistance);
-            const opacity = t * 0.75;
-            // Neon blue links with soft glow
+            const opacity = t * 0.55;
+            // Neon blue links (reduced glow for performance)
             ctx.strokeStyle = `rgba(96,165,250,${opacity})`;
-            ctx.lineWidth = 1.0 + t * 1.1;
-            ctx.shadowColor = 'rgba(59,130,246,0.55)';
-            ctx.shadowBlur = 8 + t * 10;
+            ctx.lineWidth = 1.0 + t * 0.6;
             ctx.beginPath();
             ctx.moveTo(nodeA.x, nodeA.y);
             ctx.lineTo(nodeB.x, nodeB.y);
             ctx.stroke();
-            ctx.shadowBlur = 0;
           }
         }
       }
     };
 
     const drawNodes = () => {
-      const time = performance.now() * 0.004;
+      const time = performance.now() * 0.0032;
       nodesRef.current.forEach(node => {
         const pulse = (Math.sin(time + (node.x + node.y) * 0.002) + 1) * 0.5; // 0..1
-        const radius = 3.2 + pulse * 2.0;
-        const glow = 16 + pulse * 20;
-        const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 14 + pulse * 10);
+        const radius = 2.6 + pulse * 1.6;
+        const glow = 10 + pulse * 12;
+        const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 12 + pulse * 8);
         // Neon blue palette
         gradient.addColorStop(0, 'rgba(191, 219, 254, 1)');    // blue-100 core
-        gradient.addColorStop(0.4, 'rgba(96, 165, 250, 0.95)'); // blue-400 ring
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.2)');    // blue-500 falloff
+        gradient.addColorStop(0.4, 'rgba(96, 165, 250, 0.9)');  // blue-400 ring
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.18)');   // blue-500 falloff
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Stronger neon glow in blue
-        ctx.shadowColor = 'rgba(59, 130, 246, 0.95)';
+        // Neon glow in blue (reduced for performance)
+        ctx.shadowColor = 'rgba(59, 130, 246, 0.8)';
         ctx.shadowBlur = glow;
         ctx.beginPath();
         ctx.arc(node.x, node.y, Math.max(2, radius * 0.6), 0, Math.PI * 2);
