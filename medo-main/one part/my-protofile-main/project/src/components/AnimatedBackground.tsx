@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 
+type Shape = 'circle' | 'triangle' | 'square';
+
 interface Node {
   x: number;
   y: number;
   vx: number;
   vy: number;
   connections: number[];
+  shape: Shape;
 }
 
 const AnimatedBackground: React.FC = () => {
@@ -48,13 +51,16 @@ const AnimatedBackground: React.FC = () => {
       nodesRef.current = [];
 
       for (let i = 0; i < nodeCount; i++) {
+        const r = Math.random();
+        const shape: Shape = r < 0.34 ? 'circle' : r < 0.67 ? 'triangle' : 'square';
         nodesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          // Slower movement on mobile to reduce CPU/GPU
-          vx: (Math.random() - 0.5) * (isMobileMode ? 1.4 : 3.2),
-          vy: (Math.random() - 0.5) * (isMobileMode ? 1.4 : 3.2),
-          connections: []
+          // Slightly faster movement as requested
+          vx: (Math.random() - 0.5) * (isMobileMode ? 1.8 : 3.8),
+          vy: (Math.random() - 0.5) * (isMobileMode ? 1.8 : 3.8),
+          connections: [],
+          shape
         });
       }
     };
@@ -104,15 +110,22 @@ const AnimatedBackground: React.FC = () => {
         gradient.addColorStop(1, 'rgba(236, 72, 153, 0.3)');
 
         ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Glow effect
         ctx.shadowColor = '#10b981';
-        ctx.shadowBlur = 20;
+        ctx.shadowBlur = 18;
+
+        const size = 4;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+        if (node.shape === 'circle') {
+          ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
+        } else if (node.shape === 'triangle') {
+          const h = size * 2;
+          ctx.moveTo(node.x, node.y - h * 0.6);
+          ctx.lineTo(node.x - size, node.y + h * 0.4);
+          ctx.lineTo(node.x + size, node.y + h * 0.4);
+          ctx.closePath();
+        } else {
+          ctx.rect(node.x - size, node.y - size, size * 2, size * 2);
+        }
         ctx.fill();
         ctx.shadowBlur = 0;
       });
