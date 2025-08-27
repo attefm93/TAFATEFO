@@ -79,8 +79,15 @@ const Navbar: React.FC = () => {
         localStorage.removeItem('supabase.auth.token');
         localStorage.removeItem('supabase.auth.refresh-token');
       } catch {}
-      // Ensure any stale UI/session is gone
-      setTimeout(() => { window.location.href = '/'; }, 10);
+      // Ensure any stale UI/session is gone: navigate to /login and hard-reload
+      setTimeout(() => {
+        const target = '/login';
+        if (window.location.pathname === target) {
+          window.location.reload();
+        } else {
+          window.location.assign(target);
+        }
+      }, 10);
     }
   };
 
