@@ -505,6 +505,8 @@ function Rating() {
                     {isAdmin && (
                       <div className="mt-3 flex gap-2">
                         <button onClick={async () => {
+                          const { data: sessionData } = await supabase.auth.getSession();
+                          if (!sessionData.session?.user) { alert('Please login to edit ratings.'); return; }
                           const newStarsStr = prompt('Edit stars (1-5)', String(r.stars || 5));
                           if (!newStarsStr) return;
                           const newStars = Math.max(1, Math.min(5, parseInt(newStarsStr, 10) || 5));
@@ -518,6 +520,8 @@ function Rating() {
                           }
                         }} className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm">Edit</button>
                         <button onClick={async () => {
+                          const { data: sessionData } = await supabase.auth.getSession();
+                          if (!sessionData.session?.user) { alert('Please login to delete ratings.'); return; }
                           if (!confirm('Delete this rating?')) return;
                           try {
                             const { error } = await supabase.from('ratings').delete().eq('id', r.id);
