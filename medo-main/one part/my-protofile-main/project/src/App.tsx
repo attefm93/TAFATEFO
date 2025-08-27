@@ -390,6 +390,7 @@ function Rating() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   React.useEffect(() => {
     const load = async () => {
       try {
@@ -452,14 +453,14 @@ function Rating() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Rating</h3>
-        <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const feedback = String(form.get('feedback')||''); try { const { data: sessionData } = await supabase.auth.getSession(); if (!sessionData.session?.user) { alert('Please login to submit a rating.'); return; } const user = sessionData.session.user; const meta: any = user.user_metadata || {}; const userName = meta.full_name || [meta.first_name, meta.last_name].filter(Boolean).join(' ') || user.email || 'User'; const userAvatar = meta.avatar_url || meta.picture || null; const payload: any = { stars, feedback, user_name: userName, user_avatar_url: userAvatar }; const { error } = await supabase.from('ratings').insert(payload); if (error) throw error; alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } }} className="grid gap-4 max-w-2xl">
+        <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const feedback = String(form.get('feedback')||''); if (stars < 1) { alert('Please select at least 1 star.'); return; } try { setSubmitting(true); const { data: sessionData } = await supabase.auth.getSession(); if (!sessionData.session?.user) { alert('Please login to submit a rating.'); return; } const user = sessionData.session.user; const meta: any = user.user_metadata || {}; const userName = meta.full_name || [meta.first_name, meta.last_name].filter(Boolean).join(' ') || user.email || 'User'; const userAvatar = meta.avatar_url || meta.picture || null; const payload: any = { stars, feedback, user_name: userName, user_avatar_url: userAvatar }; const { error } = await supabase.from('ratings').insert(payload); if (error) throw error; const { data: refreshed } = await supabase.from('ratings').select('*').order('created_at', { ascending: false }); setItems(refreshed || []); alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } finally { setSubmitting(false); } }} className="grid gap-4 max-w-2xl">
           <div className="flex items-center gap-2">
             {[1,2,3,4,5].map((i) => (
               <Star key={i} index={i} />
             ))}
           </div>
           <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg neon-input" />
-          <button type="submit" disabled={!isLoggedIn} className="px-6 py-3 rounded-lg bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 text-white font-semibold w-max">{isLoggedIn ? 'Submit' : 'Login to submit'}</button>
+          <button type="submit" disabled={!isLoggedIn || submitting || stars < 1} className="px-6 py-3 rounded-lg bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 text-white font-semibold w-max">{!isLoggedIn ? 'Login to submit' : submitting ? 'Submitting...' : 'Submit'}</button>
         </form>
         <div className="mt-10 max-w-3xl">
           <h4 className="text-2xl font-bold text-white mb-4">Recent ratings</h4>
