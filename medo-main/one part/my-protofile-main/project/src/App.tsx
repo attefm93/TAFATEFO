@@ -440,12 +440,16 @@ function Rating() {
             </filter>
           </defs>
           <g filter={`url(#ds-${index})`}>
-            <polygon
-              points="32,6 39,24 59,24 43,35 49,54 32,43 15,54 21,35 5,24 25,24"
+            <path
+              d="M32 8 L38 23 L54 24 L41 33 L46 49 L32 40 L18 49 L23 33 L10 24 L26 23 Z"
               fill={active ? `url(#goldGrad-${index})` : '#1f2937'}
               stroke={active ? '#fde68a' : '#374151'}
-              strokeWidth="1.5"
+              strokeWidth="1.6"
+              strokeLinejoin="round"
             />
+            {active && (
+              <path d="M32 8 L38 23 L54 24 L41 33 L46 49 L32 40 L18 49 L23 33 L10 24 L26 23 Z" fill="none" stroke="#fde68a" strokeOpacity="0.7" strokeWidth="0.8" />
+            )}
             {active && (<circle cx="26" cy="20" r="6" fill="rgba(255,255,255,0.35)" />)}
           </g>
         </svg>
