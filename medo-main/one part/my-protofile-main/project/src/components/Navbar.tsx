@@ -132,22 +132,22 @@ const Navbar: React.FC = () => {
                   )}
                   <button
                     onClick={handleSignOut}
-                    className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 border-2 border-blue-400/50 text-blue-300"
+                    className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 hover:from-green-400/20 hover:to-green-500/20 focus:from-green-400/20 focus:to-green-500/20 border-2 border-blue-400/50 hover:border-green-400/50 focus:border-green-400/50 text-blue-300 hover:text-green-300 focus:text-green-300"
                   >
                     <span className="btn-gleam btn-gleam-blue" aria-hidden="true" />
                     <span className="btn-beam" aria-hidden="true" />
                     <span className="relative z-10">Sign out</span>
-                    <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50" aria-hidden="true" />
+                    <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50 group-hover:from-green-400/50 group-hover:to-green-500/50 group-focus:from-green-400/50 group-focus:to-green-500/50" aria-hidden="true" />
                   </button>
                 </li>
               )}
               {isAdmin && (
                 <li>
-                  <button onClick={exitAdmin} className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 border-2 border-blue-400/50 text-blue-300">
+                  <button onClick={exitAdmin} className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 hover:from-green-400/20 hover:to-green-500/20 focus:from-green-400/20 focus:to-green-500/20 border-2 border-blue-400/50 hover:border-green-400/50 focus:border-green-400/50 text-blue-300 hover:text-green-300 focus:text-green-300">
                     <span className="btn-gleam btn-gleam-blue" aria-hidden="true" />
                     <span className="btn-beam" aria-hidden="true" />
                     <span className="relative z-10">Exit Admin</span>
-                    <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50" aria-hidden="true" />
+                    <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50 group-hover:from-green-400/50 group-hover:to-green-500/50 group-focus:from-green-400/50 group-focus:to-green-500/50" aria-hidden="true" />
                   </button>
                 </li>
               )}
@@ -160,11 +160,11 @@ const Navbar: React.FC = () => {
                 <li className="flex items-center gap-3 py-1">
                   {avatarUrl && <img src={avatarUrl} alt="avatar" className="w-8 h-8 rounded-full border border-white/20" />}
                   {isLoggedIn && (
-                    <button onClick={() => { handleSignOut(); setOpen(false); }} className="w-full justify-center group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 border-2 border-blue-400/50 text-blue-300">
+                    <button onClick={() => { handleSignOut(); setOpen(false); }} className="w-full justify-center group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 hover:from-green-400/20 hover:to-green-500/20 focus:from-green-400/20 focus:to-green-500/20 border-2 border-blue-400/50 hover:border-green-400/50 focus:border-green-400/50 text-blue-300 hover:text-green-300 focus:text-green-300">
                       <span className="btn-gleam btn-gleam-blue" aria-hidden="true" />
                       <span className="btn-beam" aria-hidden="true" />
                       <span className="relative z-10">Sign out</span>
-                      <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50" aria-hidden="true" />
+                      <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50 group-hover:from-green-400/50 group-hover:to-green-500/50 group-focus:from-green-400/50 group-focus:to-green-500/50" aria-hidden="true" />
                     </button>
                   )}
                 </li>
@@ -179,11 +179,11 @@ const Navbar: React.FC = () => {
                 ))}
                 {isAdmin && (
                   <li>
-                    <button onClick={() => { exitAdmin(); setOpen(false); }} className="w-full justify-center group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 border-2 border-blue-400/50 text-blue-300">
+                    <button onClick={() => { exitAdmin(); setOpen(false); }} className="w-full justify-center group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 hover:from-green-400/20 hover:to-green-500/20 focus:from-green-400/20 focus:to-green-500/20 border-2 border-blue-400/50 hover:border-green-400/50 focus:border-green-400/50 text-blue-300 hover:text-green-300 focus:text-green-300">
                       <span className="btn-gleam btn-gleam-blue" aria-hidden="true" />
                       <span className="btn-beam" aria-hidden="true" />
                       <span className="relative z-10">Exit Admin</span>
-                      <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50" aria-hidden="true" />
+                      <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50 group-hover:from-green-400/50 group-hover:to-green-500/50 group-focus:from-green-400/50 group-focus:to-green-500/50" aria-hidden="true" />
                     </button>
                   </li>
                 )}

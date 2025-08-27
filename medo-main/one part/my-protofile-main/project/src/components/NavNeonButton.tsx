@@ -38,7 +38,7 @@ const NavNeonButton: React.FC<NavNeonButtonProps> = ({ to, children, variant = '
   const variantClasses: Record<Variant, string> = {
     green: "bg-gradient-to-r from-green-400/20 to-green-500/20 border-2 border-green-400/50 text-green-400",
     pink: "bg-gradient-to-r from-pink-400/20 to-pink-500/20 border-2 border-pink-400/50 text-pink-400",
-    blue: "bg-gradient-to-r from-blue-400/20 to-blue-500/20 border-2 border-blue-400/50 text-blue-400",
+    blue: "bg-gradient-to-r from-blue-400/20 to-blue-500/20 border-2 border-blue-400/50 text-blue-400 hover:from-green-400/20 hover:to-green-500/20 hover:border-green-400/50 hover:text-green-400 focus:from-green-400/20 focus:to-green-500/20 focus:border-green-400/50 focus:text-green-400",
   } as const;
 
   const baseGleamClass = effective === 'green' ? 'btn-gleam-green' : effective === 'pink' ? 'btn-gleam-pink' : 'btn-gleam-blue';
