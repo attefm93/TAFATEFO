@@ -422,9 +422,9 @@ function Rating() {
         onMouseLeave={() => setHover(null)}
         onClick={() => setStars(index)}
         aria-label={`Rate ${index} star`}
-        className={"transition transform hover:scale-110 " + (active ? "" : "opacity-70")}
+        className={"star-glow-wrap " + (active ? "active" : "")}
       >
-        <svg width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+        <svg className={(active ? "animate-breathe-gold " : "") + "star-3d"} width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
           <defs>
             <linearGradient id={`goldGrad-${index}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#fff1a8" />
@@ -442,9 +442,7 @@ function Rating() {
               stroke={active ? '#fde68a' : '#374151'}
               strokeWidth="1.5"
             />
-            {active && (
-              <circle cx="26" cy="20" r="6" fill="rgba(255,255,255,0.35)" />
-            )}
+            {active && (<circle cx="26" cy="20" r="6" fill="rgba(255,255,255,0.35)" />)}
           </g>
         </svg>
       </button>
