@@ -27,12 +27,8 @@ const AnimatedBackground: React.FC = () => {
     const isMobileMode = isSmallScreen || isLowPower;
 
     const resizeCanvas = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, isMobileMode ? 1 : 2);
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = '100vw';
-      canvas.style.height = '100vh';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
 
     const createNodes = () => {
@@ -41,32 +37,28 @@ const AnimatedBackground: React.FC = () => {
         return;
       }
 
-      // Slight bump in density with conservative caps
-      const baseCount = Math.min(240, Math.floor((canvas.width * canvas.height) / 8000));
-      const maxForSmallScreens = isMobileMode ? 34 : 180;
+      // Denser effect like original mesh
+      const baseCount = Math.min(260, Math.floor((canvas.width * canvas.height) / 7000));
+      const maxForSmallScreens = window.innerWidth < 768 ? 120 : 260;
       const nodeCount = Math.min(maxForSmallScreens, baseCount);
       nodesRef.current = [];
 
       for (let i = 0; i < nodeCount; i++) {
-        // Pixels per second speeds for consistent motion regardless of FPS
-        const minSpeed = isMobileMode ? 60 : 110;
-        const maxSpeed = isMobileMode ? 120 : 200;
-        const speed = minSpeed + Math.random() * (maxSpeed - minSpeed);
-        const angle = Math.random() * Math.PI * 2;
+        // Faster movement like original
         nodesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
+          vx: (Math.random() - 0.5) * 5.0,
+          vy: (Math.random() - 0.5) * 5.0,
           connections: [],
         });
       }
     };
 
-    const updateNodes = (dt: number) => {
+    const updateNodes = () => {
       nodesRef.current.forEach(node => {
-        node.x += node.vx * dt;
-        node.y += node.vy * dt;
+        node.x += node.vx;
+        node.y += node.vy;
 
         if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
         if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
@@ -77,28 +69,25 @@ const AnimatedBackground: React.FC = () => {
     };
 
     const drawConnections = () => {
-      // Draw on all devices, but skip when too many nodes for safety
-      if (nodesRef.current.length > 120) return;
-      const maxDistance = 220;
+      // Original denser mesh
+      const maxDistance = 260;
       for (let i = 0; i < nodesRef.current.length; i++) {
         for (let j = i + 1; j < nodesRef.current.length; j++) {
           const nodeA = nodesRef.current[i];
           const nodeB = nodesRef.current[j];
-          const dx = nodeA.x - nodeB.x;
-          const dy = nodeA.y - nodeB.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distance = Math.sqrt(Math.pow(nodeA.x - nodeB.x, 2) + Math.pow(nodeA.y - nodeB.y, 2));
           if (distance < maxDistance) {
-            const t = (1 - distance / maxDistance);
-            const opacity = t * 0.6;
-            ctx.strokeStyle = `rgba(96,165,250,${opacity})`;
-            ctx.lineWidth = 1.2 + t * 0.6;
-            ctx.shadowColor = 'rgba(59,130,246,0.45)';
-            ctx.shadowBlur = 6 + t * 6;
+            const opacity = (1 - distance / maxDistance) * 0.6;
+            const gradient = ctx.createLinearGradient(nodeA.x, nodeA.y, nodeB.x, nodeB.y);
+            gradient.addColorStop(0, `rgba(16, 185, 129, ${opacity})`);
+            gradient.addColorStop(0.5, `rgba(59, 130, 246, ${opacity})`);
+            gradient.addColorStop(1, `rgba(236, 72, 153, ${opacity})`);
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(nodeA.x, nodeA.y);
             ctx.lineTo(nodeB.x, nodeB.y);
             ctx.stroke();
-            ctx.shadowBlur = 0;
           }
         }
       }
@@ -107,30 +96,31 @@ const AnimatedBackground: React.FC = () => {
     const drawNodes = () => {
       nodesRef.current.forEach(node => {
         const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 12);
-        gradient.addColorStop(0, 'rgba(191, 219, 254, 1)');
-        gradient.addColorStop(0.45, 'rgba(96, 165, 250, 0.95)');
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.22)');
+        gradient.addColorStop(0, 'rgba(16, 185, 129, 1)');
+        gradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.8)');
+        gradient.addColorStop(1, 'rgba(236, 72, 153, 0.3)');
 
         ctx.fillStyle = gradient;
-        ctx.shadowColor = 'rgba(59, 130, 246, 0.8)';
-        ctx.shadowBlur = 12;
-        const size = 3.5;
+        const size = 4;
         ctx.beginPath();
         ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Glow effect
+        ctx.shadowColor = '#10b981';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
       });
     };
 
-    let last = 0;
-    const animate = (ts = 0) => {
-      if (last === 0) last = ts || performance.now();
-      const dt = Math.min(Math.max((ts - last) / 1000, 0), 0.033); // cap to ~33ms
-      last = ts;
+    const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       if (!prefersReducedMotion) {
-        updateNodes(dt || 1/60);
+        updateNodes();
         drawConnections();
         drawNodes();
       }
@@ -149,19 +139,10 @@ const AnimatedBackground: React.FC = () => {
       createNodes();
     };
 
-    const onVisibility = () => {
-      if (document.visibilityState === 'hidden' && animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      } else if (document.visibilityState === 'visible') {
-        animationRef.current = requestAnimationFrame(animate);
-      }
-    };
     window.addEventListener('resize', handleResize);
-    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      document.removeEventListener('visibilitychange', onVisibility);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
