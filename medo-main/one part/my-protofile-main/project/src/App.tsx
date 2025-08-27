@@ -422,19 +422,29 @@ function Rating() {
         onMouseLeave={() => setHover(null)}
         onClick={() => setStars(index)}
         aria-label={`Rate ${index} star`}
-        className={"transition transform " + (active ? "glow-strong-yellow" : "")}
+        className={"transition transform hover:scale-110 " + (active ? "" : "opacity-70")}
       >
-        <svg className={(active ? "animate-spin-fast " : "") + "star-3d"} width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
           <defs>
-            <radialGradient id="starSpecularGradient" cx="30%" cy="30%" r="70%">
-              <stop offset="0%" stop-color="#fff59d"/>
-              <stop offset="60%" stop-color="#fde68a" stop-opacity="0.6"/>
-              <stop offset="100%" stop-color="#facc15" stop-opacity="0"/>
-            </radialGradient>
+            <linearGradient id={`goldGrad-${index}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#fff1a8" />
+              <stop offset="55%" stopColor="#facc15" />
+              <stop offset="100%" stopColor="#b45309" />
+            </linearGradient>
+            <filter id={`ds-${index}`} x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor={active ? '#f59e0b' : '#111827'} floodOpacity="0.6" />
+            </filter>
           </defs>
-          <g style={{ transform: 'translateZ(30px)' }}>
-            <polygon className="star-face" points="32,4 40,24 62,24 44,36 50,56 32,44 14,56 20,36 2,24 24,24" />
-            <circle className="star-specular" cx="26" cy="20" r="10" />
+          <g filter={`url(#ds-${index})`}>
+            <polygon
+              points="32,6 39,24 59,24 43,35 49,54 32,43 15,54 21,35 5,24 25,24"
+              fill={active ? `url(#goldGrad-${index})` : '#1f2937'}
+              stroke={active ? '#fde68a' : '#374151'}
+              strokeWidth="1.5"
+            />
+            {active && (
+              <circle cx="26" cy="20" r="6" fill="rgba(255,255,255,0.35)" />
+            )}
           </g>
         </svg>
       </button>
@@ -445,11 +455,9 @@ function Rating() {
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Rating</h3>
         <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const feedback = String(form.get('feedback')||''); try { const { data: sessionData } = await supabase.auth.getSession(); if (!sessionData.session?.user) { alert('Please login to submit a rating.'); return; } const user = sessionData.session.user; const meta: any = user.user_metadata || {}; const userName = meta.full_name || [meta.first_name, meta.last_name].filter(Boolean).join(' ') || user.email || 'User'; const userAvatar = meta.avatar_url || meta.picture || null; const payload: any = { stars, feedback, created_by: user.id, user_name: userName, user_avatar_url: userAvatar }; const { error } = await supabase.from('ratings').insert(payload); if (error) throw error; alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } }} className="grid gap-4 max-w-2xl">
-          <div className="orbit">
+          <div className="flex items-center gap-2">
             {[1,2,3,4,5].map((i) => (
-              <div key={i} className="orbit-item orbit-spin" style={{ transform: `rotate(${(i-1)*72}deg)` }}>
-                <Star index={i} />
-              </div>
+              <Star key={i} index={i} />
             ))}
           </div>
           <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg neon-input" />
