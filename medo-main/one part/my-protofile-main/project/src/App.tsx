@@ -9,6 +9,23 @@ import ProfileImage from './components/ProfileImage';
 import TypingText from './components/TypingText';
 import LoadingScreen from './components/LoadingScreen';
 import Navbar from './components/Navbar';
+function AdminGate({ onUnlock }: { onUnlock: () => void }) {
+  const [code, setCode] = useState('');
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (code === '6532') {
+      onUnlock();
+    } else {
+      alert('Wrong admin code');
+    }
+  };
+  return (
+    <form onSubmit={submit} className="grid grid-cols-1 gap-3 max-w-sm p-4 rounded-xl neon-form">
+      <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="Enter admin code" className="px-4 py-3 rounded-lg neon-input" />
+      <button type="submit" className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold w-max">Unlock</button>
+    </form>
+  );
+}
 
 function Home() {
   const handleContactEmail = () => {
@@ -53,11 +70,42 @@ function Home() {
 }
 
 function Works() {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+  };
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
-        <h3 className="text-3xl font-bold text-white mb-4">Our Works</h3>
-        <p className="text-white/70">Showcase coming soon.</p>
+        <h3 className="text-3xl font-bold text-white mb-6">Our Works</h3>
+        {!isAdmin ? (
+          <div className="max-w-md grid gap-3">
+            <p className="text-white/70">Admin access required to upload new work.</p>
+            <AdminGate onUnlock={() => setIsAdmin(true)} />
+          </div>
+        ) : (
+          <form name="works" method="POST" data-netlify="true" className="grid gap-4 max-w-2xl" encType="multipart/form-data" netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="works" />
+            <p className="hidden">
+              <label>
+                Don’t fill this out if you’re human: <input name="bot-field" />
+              </label>
+            </p>
+            <input name="title" placeholder="Work Title" required className="px-4 py-3 rounded-lg neon-input" />
+            <input name="description" placeholder="Short Description" className="px-4 py-3 rounded-lg neon-input" />
+            <input name="image" type="file" accept="image/*" onChange={onFileChange} className="px-4 py-3 rounded-lg neon-input" />
+            {imagePreview && <img src={imagePreview} alt="Preview" className="max-h-64 rounded-lg border border-white/10" />}
+            <button type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold w-max">Upload</button>
+          </form>
+        )}
       </div>
     </div>
   );
@@ -87,7 +135,7 @@ function Contact() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Contact</h3>
-        <form name="contact" method="POST" data-netlify="true" className="grid grid-cols-1 gap-4 max-w-2xl" netlify-honeypot="bot-field">
+        <form name="contact" method="POST" data-netlify="true" className="grid grid-cols-1 gap-4 max-w-2xl p-6 rounded-2xl neon-form" netlify-honeypot="bot-field">
           <input type="hidden" name="form-name" value="contact" />
           <input type="hidden" name="subject" value="New contact message from portfolio" />
           <p className="hidden">
@@ -96,12 +144,12 @@ function Contact() {
             </label>
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input name="firstName" placeholder="First Name" required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
-            <input name="middleName" placeholder="Middle Name" className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
-            <input name="lastName" placeholder="Last Name" required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+            <input name="firstName" placeholder="First Name" required className="px-4 py-3 rounded-lg neon-input" />
+            <input name="middleName" placeholder="Middle Name" className="px-4 py-3 rounded-lg neon-input" />
+            <input name="lastName" placeholder="Last Name" required className="px-4 py-3 rounded-lg neon-input" />
           </div>
-          <input name="phone" type="tel" placeholder="Phone Number" required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
-          <textarea name="message" placeholder="Your Message" rows={5} required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+          <input name="phone" type="tel" placeholder="Phone Number" required className="px-4 py-3 rounded-lg neon-input" />
+          <textarea name="message" placeholder="Your Message" rows={5} required className="px-4 py-3 rounded-lg neon-input" />
           <button type="submit" className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold w-max">Send</button>
         </form>
       </div>
@@ -111,6 +159,7 @@ function Contact() {
 
 function Certification() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -125,21 +174,28 @@ function Certification() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Certification</h3>
-        <form name="certification" method="POST" data-netlify="true" className="grid gap-4 max-w-2xl" encType="multipart/form-data" netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="certification" />
-          <p className="hidden">
-            <label>
-              Don’t fill this out if you’re human: <input name="bot-field" />
-            </label>
-          </p>
-          <input name="certificateName" placeholder="Certificate Name" required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
-          <input name="certificateInfo" placeholder="Certificate Info" className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
-          <input name="certificateImage" type="file" accept="image/*" onChange={onFileChange} className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
-          {imagePreview && (
-            <img src={imagePreview} alt="Preview" className="max-h-64 rounded-lg border border-white/10" />
-          )}
-          <button type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold w-max">Upload</button>
-        </form>
+        {!isAdmin ? (
+          <div className="max-w-md grid gap-3">
+            <p className="text-white/70">Admin access required to upload certification.</p>
+            <AdminGate onUnlock={() => setIsAdmin(true)} />
+          </div>
+        ) : (
+          <form name="certification" method="POST" data-netlify="true" className="grid gap-4 max-w-2xl" encType="multipart/form-data" netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="certification" />
+            <p className="hidden">
+              <label>
+                Don’t fill this out if you’re human: <input name="bot-field" />
+              </label>
+            </p>
+            <input name="certificateName" placeholder="Certificate Name" required className="px-4 py-3 rounded-lg neon-input" />
+            <input name="certificateInfo" placeholder="Certificate Info" className="px-4 py-3 rounded-lg neon-input" />
+            <input name="certificateImage" type="file" accept="image/*" onChange={onFileChange} className="px-4 py-3 rounded-lg neon-input" />
+            {imagePreview && (
+              <img src={imagePreview} alt="Preview" className="max-h-64 rounded-lg border border-white/10" />
+            )}
+            <button type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold w-max">Upload</button>
+          </form>
+        )}
       </div>
     </div>
   );
@@ -157,7 +213,7 @@ function Rating() {
         onMouseLeave={() => setHover(null)}
         onClick={() => setStars(index)}
         aria-label={`Rate ${index} star`}
-        className={"w-8 h-8 md:w-10 md:h-10 mr-1 rounded-full border transition " + (active ? "bg-yellow-400 border-yellow-300" : "bg-white/5 border-white/10")}
+        className={"w-10 h-10 md:w-12 md:h-12 mr-2 rounded-full border transition transform " + (active ? "bg-yellow-400 border-yellow-300 glow-strong-yellow animate-spin-fast" : "bg-white/5 border-white/10")}
       />
     );
   };
@@ -178,7 +234,7 @@ function Rating() {
             ))}
           </div>
           <input type="hidden" name="stars" value={stars} />
-          <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+          <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg neon-input" />
           <button type="submit" className="px-6 py-3 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white font-semibold w-max">Submit</button>
         </form>
       </div>
@@ -233,11 +289,37 @@ function Talk() {
   );
 }
 function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const password = String(form.get('password') || '');
+    if (password === '6532') {
+      alert('Admin authenticated');
+    } else {
+      alert('Invalid password');
+    }
+  };
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
-        <h3 className="text-3xl font-bold text-white mb-4">Login</h3>
-        <p className="text-white/70">Authentication coming soon.</p>
+        <h3 className="text-3xl font-bold text-white mb-6">Login</h3>
+        <div className="grid md:grid-cols-2 gap-8">
+          <form onSubmit={onSubmit} className="grid gap-4 p-6 rounded-2xl neon-form">
+            <input name="email" type="email" placeholder="Email" required className="px-4 py-3 rounded-lg neon-input" />
+            <div>
+              <input name="password" type={showPassword ? 'text' : 'password'} placeholder="Password" required className="px-4 py-3 rounded-lg neon-input w-full" />
+              <label className="text-white/70 text-sm mt-2 inline-flex items-center gap-2">
+                <input type="checkbox" onChange={(e) => setShowPassword(e.target.checked)} /> Show password
+              </label>
+            </div>
+            <button type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold w-max">Login</button>
+          </form>
+          <div className="p-6 rounded-2xl neon-form grid content-center">
+            <button className="px-6 py-3 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold w-full">Continue with Google</button>
+            <p className="text-white/50 text-sm mt-3">Google auth button (placeholder). Integrate real OAuth later.</p>
+          </div>
+        </div>
       </div>
     </div>
   );
