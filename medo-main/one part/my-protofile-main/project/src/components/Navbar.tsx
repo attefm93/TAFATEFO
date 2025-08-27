@@ -58,7 +58,8 @@ const Navbar: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut({ scope: 'global' });
+      // Use default scope; then force-clear any persisted tokens as a fallback
+      await supabase.auth.signOut();
     } catch (e) {
       // noop
     } finally {
@@ -68,6 +69,16 @@ const Navbar: React.FC = () => {
       // immediately hide sign-out and avatar from UI
       setIsLoggedIn(false);
       setAvatarUrl(null);
+      // Hard clear possible Supabase auth tokens if still present
+      try {
+        const url = (import.meta as any)?.env?.VITE_SUPABASE_URL as string | undefined;
+        const ref = url ? (url.match(/^https:\/\/([^.]+)/)?.[1] || '') : '';
+        if (ref) {
+          localStorage.removeItem(`sb-${ref}-auth-token`);
+        }
+        localStorage.removeItem('supabase.auth.token');
+        localStorage.removeItem('supabase.auth.refresh-token');
+      } catch {}
       // Ensure any stale UI/session is gone
       setTimeout(() => { window.location.href = '/'; }, 10);
     }
