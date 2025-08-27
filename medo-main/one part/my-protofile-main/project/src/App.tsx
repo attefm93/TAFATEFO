@@ -217,17 +217,6 @@ function Skills() {
     { name: 'SQL', icon: 'devicon-mysql-plain' },
     { name: 'Scala', icon: 'devicon-scala-plain' },
     { name: 'MATLAB', icon: 'devicon-matlab-plain' },
-    { name: 'Perl', icon: 'devicon-perl-plain' },
-    { name: 'Lua', icon: 'devicon-lua-plain' },
-    { name: 'Objective-C', icon: 'devicon-objectivec-plain' },
-    { name: 'Haskell', icon: 'devicon-haskell-plain' },
-    { name: 'Elixir', icon: 'devicon-elixir-plain' },
-    { name: 'F#', icon: 'devicon-fsharp-plain' },
-    { name: 'Shell', icon: 'devicon-bash-plain' },
-    { name: 'Visual Basic', icon: 'devicon-dot-net-plain' },
-    { name: 'Groovy', icon: 'devicon-groovy-plain' },
-    { name: 'Fortran', icon: 'devicon-fortran-plain' },
-    { name: 'COBOL', icon: 'devicon-cobol-plain' },
   ];
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
@@ -246,15 +235,16 @@ function Skills() {
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-5">
           {skills.map((s) => (
             <div key={s.name} className="tilt-wrap">
-              <div className="shine-wrap relative rounded-xl border border-white/10 bg-white/5 p-3 md:p-4 flex flex-col items-center justify-center text-center hover:border-white/20 transition tilt-card">
-                <div className="absolute -inset-6 rounded-2xl blur-3xl opacity-30 bg-gradient-to-r from-green-400/20 via-pink-400/20 to-blue-500/20" aria-hidden="true" />
-                <div className="shine" aria-hidden="true" />
-                {s.icon ? (
-                  <i className={`${s.icon} colored text-4xl md:text-5xl icon-neon`} aria-hidden="true" />
-                ) : (
-                  <div className="w-14 h-14 rounded-full bg-white/10" />
-                )}
-                <span className="mt-2 text-sm md:text-base font-semibold text-neon-blue">{s.name}</span>
+              <div className="relative flex flex-col items-center justify-center text-center tilt-card">
+                <div className="shine-wrap relative h-16 w-16 md:h-20 md:w-20 rounded-full circle-neon flex items-center justify-center">
+                  <div className="shine" aria-hidden="true" />
+                  {s.icon ? (
+                    <i className={`${s.icon} colored text-3xl md:text-4xl icon-neon`} aria-hidden="true" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-white/10" />
+                  )}
+                </div>
+                <span className="mt-2 text-xs md:text-sm font-semibold text-neon-blue">{s.name}</span>
               </div>
             </div>
           ))}
