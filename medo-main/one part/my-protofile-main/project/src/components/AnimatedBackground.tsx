@@ -42,8 +42,8 @@ const AnimatedBackground: React.FC = () => {
       }
 
       // Mobile-friendly: far fewer nodes, lighter motion
-      const baseCount = Math.min(220, Math.floor((canvas.width * canvas.height) / 9000));
-      const maxForSmallScreens = isMobileMode ? 28 : 160;
+      const baseCount = Math.min(320, Math.floor((canvas.width * canvas.height) / 7000));
+      const maxForSmallScreens = isMobileMode ? 40 : 240;
       const nodeCount = Math.min(maxForSmallScreens, baseCount);
       nodesRef.current = [];
 
@@ -51,9 +51,9 @@ const AnimatedBackground: React.FC = () => {
         nodesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          // Slower movement on mobile to reduce CPU/GPU
-          vx: (Math.random() - 0.5) * (isMobileMode ? 1.4 : 3.2),
-          vy: (Math.random() - 0.5) * (isMobileMode ? 1.4 : 3.2),
+          // Slightly faster movement
+          vx: (Math.random() - 0.5) * (isMobileMode ? 2.0 : 4.2),
+          vy: (Math.random() - 0.5) * (isMobileMode ? 2.0 : 4.2),
           connections: []
         });
       }
@@ -75,7 +75,7 @@ const AnimatedBackground: React.FC = () => {
     const drawConnections = () => {
       // Skip heavy O(n^2) lines on mobile mode for better performance
       if (isMobileMode) return;
-      const maxDistance = 220;
+      const maxDistance = 240;
       for (let i = 0; i < nodesRef.current.length; i++) {
         for (let j = i + 1; j < nodesRef.current.length; j++) {
           const nodeA = nodesRef.current[i];
@@ -84,9 +84,10 @@ const AnimatedBackground: React.FC = () => {
           const dy = nodeA.y - nodeB.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           if (distance < maxDistance) {
-            const opacity = (1 - distance / maxDistance) * 0.5;
-            ctx.strokeStyle = `rgba(59,130,246,${opacity})`;
-            ctx.lineWidth = 1.5;
+            const t = (1 - distance / maxDistance);
+            const opacity = t * 0.6;
+            ctx.strokeStyle = `rgba(147,197,253,${opacity})`;
+            ctx.lineWidth = 1.2 + t * 0.8;
             ctx.beginPath();
             ctx.moveTo(nodeA.x, nodeA.y);
             ctx.lineTo(nodeB.x, nodeB.y);
@@ -97,22 +98,26 @@ const AnimatedBackground: React.FC = () => {
     };
 
     const drawNodes = () => {
+      const time = performance.now() * 0.003;
       nodesRef.current.forEach(node => {
-        const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 12);
-        gradient.addColorStop(0, 'rgba(16, 185, 129, 1)');
-        gradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.8)');
-        gradient.addColorStop(1, 'rgba(236, 72, 153, 0.3)');
+        const pulse = (Math.sin(time + (node.x + node.y) * 0.002) + 1) * 0.5; // 0..1
+        const radius = 3.5 + pulse * 2.2;
+        const glow = 14 + pulse * 18;
+        const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 14 + pulse * 10);
+        gradient.addColorStop(0, 'rgba(250, 204, 21, 1)');
+        gradient.addColorStop(0.45, 'rgba(59, 130, 246, 0.9)');
+        gradient.addColorStop(1, 'rgba(236, 72, 153, 0.35)');
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Glow effect
-        ctx.shadowColor = '#10b981';
-        ctx.shadowBlur = 20;
+        // Stronger glow
+        ctx.shadowColor = 'rgba(250, 204, 21, 0.95)';
+        ctx.shadowBlur = glow;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, Math.max(2, radius * 0.6), 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
       });
