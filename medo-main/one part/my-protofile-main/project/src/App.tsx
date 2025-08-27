@@ -239,16 +239,16 @@ function Skills() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-5">
           {skills.map((s) => (
-            <div key={s.name} className="relative rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col items-center justify-center text-center hover:border-white/20 transition">
+            <div key={s.name} className="relative rounded-xl border border-white/10 bg-white/5 p-3 md:p-4 flex flex-col items-center justify-center text-center hover:border-white/20 transition">
               <div className="absolute -inset-6 rounded-2xl blur-3xl opacity-30 bg-gradient-to-r from-green-400/20 via-pink-400/20 to-blue-500/20" aria-hidden="true" />
               {s.icon ? (
-                <i className={`${s.icon} text-5xl md:text-6xl icon-neon`} aria-hidden="true" />
+                <i className={`${s.icon} colored text-4xl md:text-5xl icon-neon`} aria-hidden="true" />
               ) : (
                 <div className="w-14 h-14 rounded-full bg-white/10" />
               )}
-              <span className="mt-3 text-white/90 font-semibold text-sm md:text-base text-neon-strong">{s.name}</span>
+              <span className="mt-2 text-sm md:text-base font-semibold text-neon-blue">{s.name}</span>
             </div>
           ))}
         </div>
