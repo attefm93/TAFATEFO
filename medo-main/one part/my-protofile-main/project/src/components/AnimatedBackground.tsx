@@ -42,8 +42,8 @@ const AnimatedBackground: React.FC = () => {
       }
 
       // Mobile-friendly: far fewer nodes, lighter motion
-      const baseCount = Math.min(220, Math.floor((canvas.width * canvas.height) / 9000));
-      const maxForSmallScreens = isMobileMode ? 28 : 160;
+      const baseCount = Math.min(240, Math.floor((canvas.width * canvas.height) / 8500));
+      const maxForSmallScreens = isMobileMode ? 32 : 180;
       const nodeCount = Math.min(maxForSmallScreens, baseCount);
       nodesRef.current = [];
 
