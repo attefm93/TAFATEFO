@@ -13,13 +13,14 @@ interface NavNeonButtonProps {
   noBeam?: boolean;
 }
 
-const NavNeonButton: React.FC<NavNeonButtonProps> = ({ to, children, variant = 'green', className = '', onClick, lite = false, noBeam = false }) => {
+const NavNeonButton: React.FC<NavNeonButtonProps> = ({ to, children, variant = 'blue', className = '', onClick, lite = false, noBeam = false }) => {
   const [isHover, setIsHover] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
 
-  const shouldBlue = isHover || isActive || isFocus;
-  const effective: Variant = shouldBlue ? 'blue' : variant;
+  // Default blue; turn green on hover/focus/active
+  const shouldGreen = isHover || isActive || isFocus;
+  const effective: Variant = shouldGreen ? 'green' : 'blue';
 
   if (lite) {
     return (
@@ -63,14 +64,14 @@ const NavNeonButton: React.FC<NavNeonButtonProps> = ({ to, children, variant = '
       <span className={`btn-gleam ${baseGleamClass}`} aria-hidden="true" />
       {!noBeam && <span className="btn-beam" aria-hidden="true" />}
 
-      {/* blue moving sweep only when blue state */}
+      {/* moving sweep matching effective color */}
       {!noBeam && (
         <span className="absolute inset-0 rounded-full overflow-hidden pointer-events-none" aria-hidden="true">
-          <span className={`h-full w-1/3 translate-x-[-150%] animate-sweep ${shouldBlue ? 'opacity-70' : 'opacity-0'} bg-gradient-to-r from-blue-400/50 via-blue-300/40 to-transparent transition-opacity duration-150`} />
+          <span className={`h-full w-1/3 translate-x-[-150%] animate-sweep ${shouldGreen ? 'opacity-70' : 'opacity-0'} bg-gradient-to-r from-green-400/50 via-green-300/40 to-transparent transition-opacity duration-150`} />
         </span>
       )}
 
-      <span className={`relative z-10 ${shouldBlue ? 'text-blue-400' : ''}`}>{children}</span>
+      <span className={`relative z-10 ${shouldGreen ? 'text-green-400' : 'text-blue-400'}`}>{children}</span>
 
       {/* outer glow: effective color */}
       <span className={`absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe ${baseGlowClass}`} aria-hidden="true" />
