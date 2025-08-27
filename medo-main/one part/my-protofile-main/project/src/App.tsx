@@ -86,8 +86,148 @@ function Contact() {
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
-        <h3 className="text-3xl font-bold text-white mb-4">Contact</h3>
-        <p className="text-white/70">Contact details coming soon.</p>
+        <h3 className="text-3xl font-bold text-white mb-6">Contact</h3>
+        <form name="contact" method="POST" data-netlify="true" className="grid grid-cols-1 gap-4 max-w-2xl" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="contact" />
+          <input type="hidden" name="subject" value="New contact message from portfolio" />
+          <p className="hidden">
+            <label>
+              Don’t fill this out if you’re human: <input name="bot-field" />
+            </label>
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input name="firstName" placeholder="First Name" required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+            <input name="middleName" placeholder="Middle Name" className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+            <input name="lastName" placeholder="Last Name" required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+          </div>
+          <input name="phone" type="tel" placeholder="Phone Number" required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+          <textarea name="message" placeholder="Your Message" rows={5} required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+          <button type="submit" className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold w-max">Send</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function Certification() {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+  };
+  return (
+    <div className="relative z-10 min-h-screen px-6 py-28">
+      <div className="mx-auto max-w-6xl">
+        <h3 className="text-3xl font-bold text-white mb-6">Certification</h3>
+        <form name="certification" method="POST" data-netlify="true" className="grid gap-4 max-w-2xl" encType="multipart/form-data" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="certification" />
+          <p className="hidden">
+            <label>
+              Don’t fill this out if you’re human: <input name="bot-field" />
+            </label>
+          </p>
+          <input name="certificateName" placeholder="Certificate Name" required className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+          <input name="certificateInfo" placeholder="Certificate Info" className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+          <input name="certificateImage" type="file" accept="image/*" onChange={onFileChange} className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+          {imagePreview && (
+            <img src={imagePreview} alt="Preview" className="max-h-64 rounded-lg border border-white/10" />
+          )}
+          <button type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold w-max">Upload</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function Rating() {
+  const [stars, setStars] = useState(0);
+  const [hover, setHover] = useState<number | null>(null);
+  const Star = ({ index }: { index: number }) => {
+    const active = (hover ?? stars) >= index;
+    return (
+      <button
+        type="button"
+        onMouseEnter={() => setHover(index)}
+        onMouseLeave={() => setHover(null)}
+        onClick={() => setStars(index)}
+        aria-label={`Rate ${index} star`}
+        className={"w-8 h-8 md:w-10 md:h-10 mr-1 rounded-full border transition " + (active ? "bg-yellow-400 border-yellow-300" : "bg-white/5 border-white/10")}
+      />
+    );
+  };
+  return (
+    <div className="relative z-10 min-h-screen px-6 py-28">
+      <div className="mx-auto max-w-6xl">
+        <h3 className="text-3xl font-bold text-white mb-6">Rating</h3>
+        <form name="rating" method="POST" data-netlify="true" className="grid gap-4 max-w-2xl" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="rating" />
+          <p className="hidden">
+            <label>
+              Don’t fill this out if you’re human: <input name="bot-field" />
+            </label>
+          </p>
+          <div className="flex items-center mb-2">
+            {[1,2,3,4,5].map((i) => (
+              <Star key={i} index={i} />
+            ))}
+          </div>
+          <input type="hidden" name="stars" value={stars} />
+          <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+          <button type="submit" className="px-6 py-3 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white font-semibold w-max">Submit</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function Talk() {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<{role: 'user'|'assistant'; content: string}[]>([]);
+  const [loading, setLoading] = useState(false);
+  const send = async () => {
+    if (!input.trim()) return;
+    const userMsg = { role: 'user' as const, content: input };
+    setMessages((m) => [...m, userMsg]);
+    setInput('');
+    setLoading(true);
+    try {
+      const res = await fetch('/.netlify/functions/talk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...messages, userMsg].slice(-10) }),
+      });
+      const data = await res.json();
+      setMessages((m) => [...m, { role: 'assistant', content: data.reply || 'No response' }]);
+    } catch (e) {
+      setMessages((m) => [...m, { role: 'assistant', content: 'Error reaching assistant.' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div className="relative z-10 min-h-screen px-6 py-28">
+      <div className="mx-auto max-w-6xl">
+        <h3 className="text-3xl font-bold text-white mb-6">Talk</h3>
+        <div className="grid gap-4 max-w-2xl">
+          <div className="rounded-lg border border-white/10 bg-white/5 p-4 max-h-96 overflow-auto">
+            {messages.length === 0 && <p className="text-white/60">Say hi to start the conversation.</p>}
+            {messages.map((m, i) => (
+              <div key={i} className={"mb-2 " + (m.role === 'user' ? 'text-blue-300' : 'text-green-300')}>
+                <span className="font-semibold">{m.role === 'user' ? 'You' : 'AI'}:</span> {m.content}
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type your message..." className="flex-1 px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40" />
+            <button disabled={loading} onClick={send} className="px-6 py-3 rounded-lg bg-pink-600 hover:bg-pink-500 disabled:opacity-50 text-white font-semibold">{loading ? 'Sending...' : 'Send'}</button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -118,6 +258,9 @@ function App() {
         <Route path="/works" element={<Works />} />
         <Route path="/skills" element={<Skills />} />
         <Route path="/about" element={<About />} />
+        <Route path="/certification" element={<Certification />} />
+        <Route path="/rating" element={<Rating />} />
+        <Route path="/talk" element={<Talk />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Home />} />

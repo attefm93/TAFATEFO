@@ -26,6 +26,23 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Hidden Netlify forms for static detection -->
+    <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="text" name="firstName" />
+      <input type="text" name="middleName" />
+      <input type="text" name="lastName" />
+      <input type="tel" name="phone" />
+      <textarea name="message"></textarea>
+    </form>
+    <form name="certification" data-netlify="true" netlify-honeypot="bot-field" encType="multipart/form-data" hidden>
+      <input type="text" name="certificateName" />
+      <input type="text" name="certificateInfo" />
+      <input type="file" name="certificateImage" />
+    </form>
+    <form name="rating" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="number" name="stars" />
+      <textarea name="feedback"></textarea>
+    </form>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
