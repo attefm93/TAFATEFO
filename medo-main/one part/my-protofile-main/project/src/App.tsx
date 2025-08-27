@@ -112,10 +112,11 @@ function Works() {
     try {
       setUploading(true);
       const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) {
+      if (!sessionData.session || !sessionData.session.user) {
         alert('Please login to upload.');
         return;
       }
+      const userId = sessionData.session.user.id;
       let imageUrl: string | null = null;
       if (file && file.size > 0) {
         const path = `works/${Date.now()}-${file.name}`;
@@ -124,7 +125,7 @@ function Works() {
         const { data: pub } = supabase.storage.from('works').getPublicUrl(path);
         imageUrl = pub.publicUrl;
       }
-      const { error: insErr } = await supabase.from('works').insert({ title, description, image_url: imageUrl });
+      const { error: insErr } = await supabase.from('works').insert({ title, description, image_url: imageUrl, created_by: userId });
       if (insErr) throw insErr;
       alert('Work uploaded');
       (e.target as HTMLFormElement).reset();
@@ -268,10 +269,11 @@ function Certification() {
     try {
       setUploading(true);
       const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) {
+      if (!sessionData.session || !sessionData.session.user) {
         alert('Please login to upload.');
         return;
       }
+      const userId = sessionData.session.user.id;
       let imageUrl: string | null = null;
       if (file && file.size > 0) {
         const path = `certifications/${Date.now()}-${file.name}`;
@@ -280,7 +282,7 @@ function Certification() {
         const { data: pub } = supabase.storage.from('certifications').getPublicUrl(path);
         imageUrl = pub.publicUrl;
       }
-      const { error: insErr } = await supabase.from('certifications').insert({ name, info, image_url: imageUrl });
+      const { error: insErr } = await supabase.from('certifications').insert({ name, info, image_url: imageUrl, created_by: userId });
       if (insErr) throw insErr;
       alert('Certification uploaded');
       (e.target as HTMLFormElement).reset();
