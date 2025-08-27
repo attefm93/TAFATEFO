@@ -6,7 +6,7 @@ interface AdminPasswordModalProps {
   onSuccess: () => void;
 }
 
-const ADMIN_PASSWORD = '#CROCTEFO#';
+const ADMIN_PASSWORD = '6532';
 
 const AdminPasswordModal: React.FC<AdminPasswordModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const [password, setPassword] = useState('');

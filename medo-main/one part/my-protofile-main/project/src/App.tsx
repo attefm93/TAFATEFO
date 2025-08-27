@@ -71,9 +71,28 @@ function Home() {
 }
 
 function Works() {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(localStorage.getItem('isAdmin') === '1');
+  const [items, setItems] = useState<any[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  React.useEffect(() => {
+    const load = async () => {
+      try {
+        const { data, error } = await supabase.from('works').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        setItems(data || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingList(false);
+      }
+    };
+    load();
+    const onAdmin = (e: any) => setIsAdmin(!!e?.detail?.isAdmin);
+    window.addEventListener('admin:changed', onAdmin);
+    return () => window.removeEventListener('admin:changed', onAdmin);
+  }, []);
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -120,12 +139,7 @@ function Works() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Our Works</h3>
-        {!isAdmin ? (
-          <div className="max-w-md grid gap-3">
-            <p className="text-white/70">Admin access required to upload new work.</p>
-            <AdminGate onUnlock={() => setIsAdmin(true)} />
-          </div>
-        ) : (
+        {isAdmin && (
           <form onSubmit={onSubmit} className="grid gap-4 max-w-2xl" encType="multipart/form-data">
             <input name="title" placeholder="Work Title" required className="px-4 py-3 rounded-lg neon-input" />
             <input name="description" placeholder="Short Description" className="px-4 py-3 rounded-lg neon-input" />
@@ -134,6 +148,17 @@ function Works() {
             <button disabled={uploading} type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold w-max">{uploading ? 'Uploading...' : 'Upload'}</button>
           </form>
         )}
+        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loadingList && <p className="text-white/60">Loading...</p>}
+          {!loadingList && items.length === 0 && <p className="text-white/60">No works yet.</p>}
+          {items.map((it) => (
+            <div key={it.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+              {it.image_url && <img src={it.image_url} alt={it.title} className="w-full h-48 object-cover rounded-lg mb-3" />}
+              <h4 className="text-white font-semibold">{it.title}</h4>
+              {it.description && <p className="text-white/70 text-sm mt-1">{it.description}</p>}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -203,8 +228,27 @@ function Contact() {
 
 function Certification() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(localStorage.getItem('isAdmin') === '1');
   const [uploading, setUploading] = useState(false);
+  const [items, setItems] = useState<any[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
+  React.useEffect(() => {
+    const load = async () => {
+      try {
+        const { data, error } = await supabase.from('certifications').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        setItems(data || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingList(false);
+      }
+    };
+    load();
+    const onAdmin = (e: any) => setIsAdmin(!!e?.detail?.isAdmin);
+    window.addEventListener('admin:changed', onAdmin);
+    return () => window.removeEventListener('admin:changed', onAdmin);
+  }, []);
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -251,12 +295,7 @@ function Certification() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Certification</h3>
-        {!isAdmin ? (
-          <div className="max-w-md grid gap-3">
-            <p className="text-white/70">Admin access required to upload certification.</p>
-            <AdminGate onUnlock={() => setIsAdmin(true)} />
-          </div>
-        ) : (
+        {isAdmin && (
           <form onSubmit={onSubmit} className="grid gap-4 max-w-2xl" encType="multipart/form-data">
             <input name="certificateName" placeholder="Certificate Name" required className="px-4 py-3 rounded-lg neon-input" />
             <input name="certificateInfo" placeholder="Certificate Info" className="px-4 py-3 rounded-lg neon-input" />
@@ -267,6 +306,17 @@ function Certification() {
             <button disabled={uploading} type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold w-max">{uploading ? 'Uploading...' : 'Upload'}</button>
           </form>
         )}
+        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loadingList && <p className="text-white/60">Loading...</p>}
+          {!loadingList && items.length === 0 && <p className="text-white/60">No certifications yet.</p>}
+          {items.map((it) => (
+            <div key={it.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+              {it.image_url && <img src={it.image_url} alt={it.name} className="w-full h-48 object-cover rounded-lg mb-3" />}
+              <h4 className="text-white font-semibold">{it.name}</h4>
+              {it.info && <p className="text-white/70 text-sm mt-1">{it.info}</p>}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
