@@ -428,7 +428,7 @@ function Rating() {
         aria-label={`Rate ${index} star`}
         className={"star-glow-wrap " + (active ? "active" : "")}
       >
-        <svg className={(active ? "animate-breathe-gold " : "") + "star-3d"} width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+        <svg className={(active ? "animate-breathe-gold " : "") + "star-3d"} width="34" height="34" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" style={{ margin: '2px' }}>
           <defs>
             <linearGradient id={`goldGrad-${index}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#fff1a8" />
@@ -471,7 +471,7 @@ function Rating() {
             }
           }
           const { data: refreshed } = await supabase.from('ratings').select('*').order('created_at', { ascending: false }); setItems(refreshed || []); alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } finally { setSubmitting(false); } }} className="grid gap-4 max-w-2xl">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {[1,2,3,4,5].map((i) => (
               <Star key={i} index={i} />
             ))}
