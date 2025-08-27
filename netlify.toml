@@ -4,6 +4,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  VITE_SUPABASE_URL = "https://pjlrhjbbirxcgdjeehnu.supabase.co"
+  VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqbHJoamJiaXJ4Y2dkamVlaG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMTMwMDMsImV4cCI6MjA3MTg4OTAwM30.PBL2-x3z7BpIg2jQUojUBw4D0QtsOk9gJeIkegTIuCI"
 
 [functions]
   directory = "medo-main/one part/my-protofile-main/netlify/functions"

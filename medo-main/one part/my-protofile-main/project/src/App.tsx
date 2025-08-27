@@ -9,6 +9,7 @@ import ProfileImage from './components/ProfileImage';
 import TypingText from './components/TypingText';
 import LoadingScreen from './components/LoadingScreen';
 import Navbar from './components/Navbar';
+import { supabase } from './lib/supabaseClient';
 function AdminGate({ onUnlock }: { onUnlock: () => void }) {
   const [code, setCode] = useState('');
   const submit = (e: React.FormEvent) => {
@@ -72,6 +73,7 @@ function Home() {
 function Works() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -80,6 +82,38 @@ function Works() {
       reader.readAsDataURL(file);
     } else {
       setImagePreview(null);
+    }
+  };
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const title = String(form.get('title') || '');
+    const description = String(form.get('description') || '');
+    const file = (form.get('image') as File | null) || null;
+    try {
+      setUploading(true);
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        alert('Please login to upload.');
+        return;
+      }
+      let imageUrl: string | null = null;
+      if (file && file.size > 0) {
+        const path = `works/${Date.now()}-${file.name}`;
+        const { error: upErr } = await supabase.storage.from('works').upload(path, file, { upsert: false });
+        if (upErr) throw upErr;
+        const { data: pub } = supabase.storage.from('works').getPublicUrl(path);
+        imageUrl = pub.publicUrl;
+      }
+      const { error: insErr } = await supabase.from('works').insert({ title, description, image_url: imageUrl });
+      if (insErr) throw insErr;
+      alert('Work uploaded');
+      (e.target as HTMLFormElement).reset();
+      setImagePreview(null);
+    } catch (err: any) {
+      alert('Upload failed: ' + (err?.message || String(err)));
+    } finally {
+      setUploading(false);
     }
   };
   return (
@@ -92,18 +126,12 @@ function Works() {
             <AdminGate onUnlock={() => setIsAdmin(true)} />
           </div>
         ) : (
-          <form name="works" method="POST" data-netlify="true" className="grid gap-4 max-w-2xl" encType="multipart/form-data" netlify-honeypot="bot-field">
-            <input type="hidden" name="form-name" value="works" />
-            <p className="hidden">
-              <label>
-                Don’t fill this out if you’re human: <input name="bot-field" />
-              </label>
-            </p>
+          <form onSubmit={onSubmit} className="grid gap-4 max-w-2xl" encType="multipart/form-data">
             <input name="title" placeholder="Work Title" required className="px-4 py-3 rounded-lg neon-input" />
             <input name="description" placeholder="Short Description" className="px-4 py-3 rounded-lg neon-input" />
             <input name="image" type="file" accept="image/*" onChange={onFileChange} className="px-4 py-3 rounded-lg neon-input" />
             {imagePreview && <img src={imagePreview} alt="Preview" className="max-h-64 rounded-lg border border-white/10" />}
-            <button type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold w-max">Upload</button>
+            <button disabled={uploading} type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold w-max">{uploading ? 'Uploading...' : 'Upload'}</button>
           </form>
         )}
       </div>
@@ -131,18 +159,34 @@ function About() {
   );
 }
 function Contact() {
+  const [submitting, setSubmitting] = useState(false);
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const payload = {
+      first_name: String(form.get('firstName') || ''),
+      middle_name: String(form.get('middleName') || ''),
+      last_name: String(form.get('lastName') || ''),
+      phone: String(form.get('phone') || ''),
+      message: String(form.get('message') || ''),
+    };
+    try {
+      setSubmitting(true);
+      const { error } = await supabase.from('contact_messages').insert(payload);
+      if (error) throw error;
+      alert('Message sent!');
+      (e.target as HTMLFormElement).reset();
+    } catch (err: any) {
+      alert('Failed to send: ' + (err?.message || String(err)));
+    } finally {
+      setSubmitting(false);
+    }
+  };
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Contact</h3>
-        <form name="contact" method="POST" data-netlify="true" className="grid grid-cols-1 gap-4 max-w-2xl p-6 rounded-2xl neon-form" netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="contact" />
-          <input type="hidden" name="subject" value="New contact message from portfolio" />
-          <p className="hidden">
-            <label>
-              Don’t fill this out if you’re human: <input name="bot-field" />
-            </label>
-          </p>
+        <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4 max-w-2xl p-6 rounded-2xl neon-form">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input name="firstName" placeholder="First Name" required className="px-4 py-3 rounded-lg neon-input" />
             <input name="middleName" placeholder="Middle Name" className="px-4 py-3 rounded-lg neon-input" />
@@ -150,7 +194,7 @@ function Contact() {
           </div>
           <input name="phone" type="tel" placeholder="Phone Number" required className="px-4 py-3 rounded-lg neon-input" />
           <textarea name="message" placeholder="Your Message" rows={5} required className="px-4 py-3 rounded-lg neon-input" />
-          <button type="submit" className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold w-max">Send</button>
+          <button disabled={submitting} type="submit" className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold w-max">{submitting ? 'Sending...' : 'Send'}</button>
         </form>
       </div>
     </div>
@@ -160,6 +204,7 @@ function Contact() {
 function Certification() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -168,6 +213,38 @@ function Certification() {
       reader.readAsDataURL(file);
     } else {
       setImagePreview(null);
+    }
+  };
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const name = String(form.get('certificateName') || '');
+    const info = String(form.get('certificateInfo') || '');
+    const file = (form.get('certificateImage') as File | null) || null;
+    try {
+      setUploading(true);
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        alert('Please login to upload.');
+        return;
+      }
+      let imageUrl: string | null = null;
+      if (file && file.size > 0) {
+        const path = `certifications/${Date.now()}-${file.name}`;
+        const { error: upErr } = await supabase.storage.from('certifications').upload(path, file, { upsert: false });
+        if (upErr) throw upErr;
+        const { data: pub } = supabase.storage.from('certifications').getPublicUrl(path);
+        imageUrl = pub.publicUrl;
+      }
+      const { error: insErr } = await supabase.from('certifications').insert({ name, info, image_url: imageUrl });
+      if (insErr) throw insErr;
+      alert('Certification uploaded');
+      (e.target as HTMLFormElement).reset();
+      setImagePreview(null);
+    } catch (err: any) {
+      alert('Upload failed: ' + (err?.message || String(err)));
+    } finally {
+      setUploading(false);
     }
   };
   return (
@@ -180,20 +257,14 @@ function Certification() {
             <AdminGate onUnlock={() => setIsAdmin(true)} />
           </div>
         ) : (
-          <form name="certification" method="POST" data-netlify="true" className="grid gap-4 max-w-2xl" encType="multipart/form-data" netlify-honeypot="bot-field">
-            <input type="hidden" name="form-name" value="certification" />
-            <p className="hidden">
-              <label>
-                Don’t fill this out if you’re human: <input name="bot-field" />
-              </label>
-            </p>
+          <form onSubmit={onSubmit} className="grid gap-4 max-w-2xl" encType="multipart/form-data">
             <input name="certificateName" placeholder="Certificate Name" required className="px-4 py-3 rounded-lg neon-input" />
             <input name="certificateInfo" placeholder="Certificate Info" className="px-4 py-3 rounded-lg neon-input" />
             <input name="certificateImage" type="file" accept="image/*" onChange={onFileChange} className="px-4 py-3 rounded-lg neon-input" />
             {imagePreview && (
               <img src={imagePreview} alt="Preview" className="max-h-64 rounded-lg border border-white/10" />
             )}
-            <button type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold w-max">Upload</button>
+            <button disabled={uploading} type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold w-max">{uploading ? 'Uploading...' : 'Upload'}</button>
           </form>
         )}
       </div>
@@ -235,19 +306,12 @@ function Rating() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Rating</h3>
-        <form name="rating" method="POST" data-netlify="true" className="grid gap-4 max-w-2xl" netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="rating" />
-          <p className="hidden">
-            <label>
-              Don’t fill this out if you’re human: <input name="bot-field" />
-            </label>
-          </p>
+        <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const feedback = String(form.get('feedback')||''); try { const { error } = await supabase.from('ratings').insert({ stars, feedback }); if (error) throw error; alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } }} className="grid gap-4 max-w-2xl">
           <div className="flex items-center mb-2">
             {[1,2,3,4,5].map((i) => (
               <Star key={i} index={i} />
             ))}
           </div>
-          <input type="hidden" name="stars" value={stars} />
           <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg neon-input" />
           <button type="submit" className="px-6 py-3 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white font-semibold w-max">Submit</button>
         </form>
@@ -305,14 +369,25 @@ function Talk() {
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState<'login'|'signup'>('login');
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
+    const email = String(form.get('email') || '');
     const password = String(form.get('password') || '');
-    if (password === '6532') {
-      alert('Admin authenticated');
-    } else {
-      alert('Invalid password');
+    try {
+      if (mode === 'login') {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        alert('Logged in');
+      } else {
+        const firstName = String(form.get('firstName') || '');
+        const lastName = String(form.get('lastName') || '');
+        const { error } = await supabase.auth.signUp({ email, password, options: { data: { first_name: firstName, last_name: lastName } } });
+        if (error) throw error;
+        alert('Signed up! Please check your email to confirm.');
+      }
+    } catch (err: any) {
+      alert('Auth failed: ' + (err?.message || String(err)));
     }
   };
   return (
@@ -348,7 +423,7 @@ function Login() {
             <button type="submit" className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold w-max">{mode==='login' ? 'Login' : 'Sign Up'}</button>
           </form>
           <div className="p-6 rounded-2xl neon-form grid content-center">
-            <button className="px-6 py-3 rounded-lg bg-white text-gray-800 font-semibold w-full flex items-center justify-center gap-2">
+            <button onClick={async () => { await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } }); }} className="px-6 py-3 rounded-lg bg-white text-gray-800 font-semibold w-full flex items-center justify-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12  c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C33.825,6.053,29.192,4,24,4C12.955,4,4,12.955,4,24  c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,16.108,18.961,13,24,13c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657  C33.825,6.053,29.192,4,24,4C16.318,4,9.5,8.469,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36  c-5.202,0-9.619-3.317-11.283-7.943l-6.522,5.025C9.5,39.531,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0..94,9.63-2.06,2.23,9.1,0,3.059,0,5.842,1.154,7.961,3.039l5.657-5.657z"/></svg>
               Continue with Google
             </button>
