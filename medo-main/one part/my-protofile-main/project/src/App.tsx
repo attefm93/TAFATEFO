@@ -196,11 +196,62 @@ function Works() {
   );
 }
 function Skills() {
+  const skills: { name: string; icon?: string }[] = [
+    { name: 'HTML', icon: 'devicon-html5-plain' },
+    { name: 'CSS', icon: 'devicon-css3-plain' },
+    { name: 'JavaScript', icon: 'devicon-javascript-plain' },
+    { name: 'TypeScript', icon: 'devicon-typescript-plain' },
+    { name: 'Python', icon: 'devicon-python-plain' },
+    { name: 'Java', icon: 'devicon-java-plain' },
+    { name: 'C', icon: 'devicon-c-plain' },
+    { name: 'C++', icon: 'devicon-cplusplus-plain' },
+    { name: 'C#', icon: 'devicon-csharp-plain' },
+    { name: 'PHP', icon: 'devicon-php-plain' },
+    { name: 'Ruby', icon: 'devicon-ruby-plain' },
+    { name: 'Swift', icon: 'devicon-swift-plain' },
+    { name: 'Kotlin', icon: 'devicon-kotlin-plain' },
+    { name: 'Go', icon: 'devicon-go-plain' },
+    { name: 'Rust', icon: 'devicon-rust-plain' },
+    { name: 'R', icon: 'devicon-r-plain' },
+    { name: 'Dart', icon: 'devicon-dart-plain' },
+    { name: 'SQL', icon: 'devicon-mysql-plain' },
+    { name: 'Scala', icon: 'devicon-scala-plain' },
+    { name: 'MATLAB', icon: 'devicon-matlab-plain' },
+    { name: 'Perl', icon: 'devicon-perl-plain' },
+    { name: 'Lua', icon: 'devicon-lua-plain' },
+    { name: 'Objective-C', icon: 'devicon-objectivec-plain' },
+    { name: 'Haskell', icon: 'devicon-haskell-plain' },
+    { name: 'Elixir', icon: 'devicon-elixir-plain' },
+    { name: 'F#', icon: 'devicon-fsharp-plain' },
+    { name: 'Shell', icon: 'devicon-bash-plain' },
+    { name: 'Visual Basic', icon: 'devicon-dot-net-plain' },
+    { name: 'Groovy', icon: 'devicon-groovy-plain' },
+    { name: 'Fortran', icon: 'devicon-fortran-plain' },
+    { name: 'COBOL', icon: 'devicon-cobol-plain' },
+  ];
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
-      <div className="mx-auto max-w-6xl">
-        <h3 className="text-3xl font-bold text-white mb-4">Skills</h3>
-        <p className="text-white/70">Skills content coming soon.</p>
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-10">
+          <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-neon-strong">Skills</h3>
+          <p className="mt-3 text-white/90 text-[1.05rem] md:text-lg leading-8 md:leading-9 tracking-wide font-medium text-neon-strong">
+            Passionate full‑stack developer crafting performant, delightful user experiences and reliable backends.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+          {skills.map((s) => (
+            <div key={s.name} className="relative rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col items-center justify-center text-center hover:border-white/20 transition">
+              <div className="absolute -inset-6 rounded-2xl blur-3xl opacity-30 bg-gradient-to-r from-green-400/20 via-pink-400/20 to-blue-500/20" aria-hidden="true" />
+              {s.icon ? (
+                <i className={`${s.icon} text-5xl md:text-6xl icon-neon`} aria-hidden="true" />
+              ) : (
+                <div className="w-14 h-14 rounded-full bg-white/10" />
+              )}
+              <span className="mt-3 text-white/90 font-semibold text-sm md:text-base text-neon-strong">{s.name}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -3,6 +3,24 @@
 @tailwind utilities;
 
 @layer utilities {
+  .text-neon-strong {
+    background-image: linear-gradient(90deg, #a5b4fc, #f0abfc, #93c5fd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow:
+      0 0 8px rgba(168, 85, 247, 0.45),
+      0 0 16px rgba(59, 130, 246, 0.35),
+      0 0 24px rgba(16, 185, 129, 0.25);
+  }
+  .icon-neon {
+    filter: drop-shadow(0 0 8px rgba(59,130,246,0.5)) drop-shadow(0 0 14px rgba(236,72,153,0.35));
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+  .icon-neon:hover {
+    transform: translateY(-4px) scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(34,197,94,0.6)) drop-shadow(0 0 20px rgba(59,130,246,0.55));
+  }
   .animate-gradient-x {
     background-size: 400% 400%;
     animation: gradient-x 4s ease infinite;
