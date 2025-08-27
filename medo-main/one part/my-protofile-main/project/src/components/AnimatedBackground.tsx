@@ -1,14 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 
-type Shape = 'circle' | 'triangle' | 'square';
-
 interface Node {
   x: number;
   y: number;
   vx: number;
   vy: number;
   connections: number[];
-  shape: Shape;
 }
 
 const AnimatedBackground: React.FC = () => {
@@ -51,8 +48,6 @@ const AnimatedBackground: React.FC = () => {
       nodesRef.current = [];
 
       for (let i = 0; i < nodeCount; i++) {
-        const r = Math.random();
-        const shape: Shape = r < 0.34 ? 'circle' : r < 0.67 ? 'triangle' : 'square';
         // Pixels per second speeds for consistent motion regardless of FPS
         const minSpeed = isMobileMode ? 60 : 110;
         const maxSpeed = isMobileMode ? 120 : 200;
@@ -64,7 +59,6 @@ const AnimatedBackground: React.FC = () => {
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           connections: [],
-          shape
         });
       }
     };
@@ -120,17 +114,7 @@ const AnimatedBackground: React.FC = () => {
 
         const size = 4;
         ctx.beginPath();
-        if (node.shape === 'circle') {
-          ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
-        } else if (node.shape === 'triangle') {
-          const h = size * 2;
-          ctx.moveTo(node.x, node.y - h * 0.6);
-          ctx.lineTo(node.x - size, node.y + h * 0.4);
-          ctx.lineTo(node.x + size, node.y + h * 0.4);
-          ctx.closePath();
-        } else {
-          ctx.rect(node.x - size, node.y - size, size * 2, size * 2);
-        }
+        ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
       });
