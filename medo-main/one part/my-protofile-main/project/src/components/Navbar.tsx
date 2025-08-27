@@ -65,10 +65,11 @@ const Navbar: React.FC = () => {
       // clear admin state as well
       localStorage.removeItem('isAdmin');
       window.dispatchEvent(new CustomEvent('admin:changed', { detail: { isAdmin: false } }));
+      // immediately hide sign-out and avatar from UI
       setIsLoggedIn(false);
       setAvatarUrl(null);
       // Ensure any stale UI/session is gone
-      setTimeout(() => { window.location.href = '/'; }, 50);
+      setTimeout(() => { window.location.href = '/'; }, 10);
     }
   };
 
@@ -116,9 +117,12 @@ const Navbar: React.FC = () => {
                   )}
                   <button
                     onClick={handleSignOut}
-                    className="px-4 py-2 rounded-full border border-white/20 text-white/90 hover:text-white hover:border-white/30 bg-white/5"
+                    className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-red-400/20 to-red-500/20 border-2 border-red-400/50 text-red-300"
                   >
-                    Sign out
+                    <span className="btn-gleam btn-gleam-pink" aria-hidden="true" />
+                    <span className="btn-beam" aria-hidden="true" />
+                    <span className="relative z-10">Sign out</span>
+                    <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-red-400/50 to-red-500/50" aria-hidden="true" />
                   </button>
                 </li>
               )}
@@ -141,8 +145,11 @@ const Navbar: React.FC = () => {
                 <li className="flex items-center gap-3 py-1">
                   {avatarUrl && <img src={avatarUrl} alt="avatar" className="w-8 h-8 rounded-full border border-white/20" />}
                   {isLoggedIn && (
-                    <button onClick={() => { handleSignOut(); setOpen(false); }} className="px-4 py-2 rounded-full border border-white/20 text-white/90 hover:text-white hover:border-white/30 bg-white/5">
-                      Sign out
+                    <button onClick={() => { handleSignOut(); setOpen(false); }} className="w-full justify-center group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-red-400/20 to-red-500/20 border-2 border-red-400/50 text-red-300">
+                      <span className="btn-gleam btn-gleam-pink" aria-hidden="true" />
+                      <span className="btn-beam" aria-hidden="true" />
+                      <span className="relative z-10">Sign out</span>
+                      <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-red-400/50 to-red-500/50" aria-hidden="true" />
                     </button>
                   )}
                 </li>
