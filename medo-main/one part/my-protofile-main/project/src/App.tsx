@@ -226,8 +226,8 @@ function Skills() {
         'radial-gradient(700px 420px at 50% 50%, rgba(16,185,129,0.08), rgba(0,0,0,0))'}} />
       <div className="mx-auto max-w-7xl relative">
         <div className="mb-10">
-          <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-neon-strong">Skills</h3>
-          <p className="mt-3 text-white/90 text-[1.05rem] md:text-lg leading-8 md:leading-9 tracking-wide font-medium text-neon-strong">
+          <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-neon-strong-blue">Skills</h3>
+          <p className="mt-3 text-white/90 text-[1.05rem] md:text-lg leading-8 md:leading-9 tracking-wide font-medium text-neon-strong-blue">
             Passionate full‑stack developer crafting performant, delightful user experiences and reliable backends.
           </p>
         </div>
