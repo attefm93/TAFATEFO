@@ -1,13 +1,14 @@
 import React from 'react';
 import { useState } from 'react';
 import { Routes, Route, NavLink } from 'react-router-dom';
-import { Mail, MessageCircle } from 'lucide-react';
+import { Mail, MessageCircle, Facebook, Linkedin, Phone } from 'lucide-react';
 import AnimatedBackground from './components/AnimatedBackground';
 import GradientText from './components/GradientText';
 import NeonButton from './components/NeonButton';
 import ProfileImage from './components/ProfileImage';
 import TypingText from './components/TypingText';
 import LoadingScreen from './components/LoadingScreen';
+import NotFound from './components/NotFound';
 import Navbar from './components/Navbar';
 import { supabase } from './lib/supabaseClient';
 function AdminGate({ onUnlock }: { onUnlock: () => void }) {
@@ -207,9 +208,82 @@ function Skills() {
 function About() {
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
-      <div className="mx-auto max-w-6xl">
-        <h3 className="text-3xl font-bold text-white mb-4">About</h3>
-        <p className="text-white/70">About section coming soon.</p>
+      <div className="mx-auto max-w-5xl space-y-10">
+        <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-green-400 via-pink-400 to-blue-500 bg-clip-text text-transparent">About Me</h3>
+
+        {/* Block 1: Image 1 + Text */}
+        <div className="relative group rounded-2xl border border-white/10 bg-white/5 overflow-hidden shadow-lg">
+          <span className="absolute -inset-6 rounded-3xl blur-3xl opacity-40 bg-gradient-to-r from-green-400/30 via-pink-400/30 to-blue-500/30" aria-hidden="true" />
+          <img src="/1.jpg" alt="Mohamed Atef portrait" className="w-full max-h-[480px] object-cover" />
+          <div className="relative p-6">
+            <p className="text-white/90 leading-relaxed text-lg">
+              Hello! My name is Mohamed Atef, and I am a dedicated software developer with a strong passion for building creative digital solutions. From the very first time I wrote a line of code, I knew that programming was not just a career choice for me, but a lifelong journey of learning, problem-solving, and innovation. Over the years, I’ve developed a deep interest in designing systems that are both efficient and user-friendly. My goal is always to turn ideas into reality through technology, and to create projects that have a real impact.
+            </p>
+          </div>
+        </div>
+
+        {/* Block 2: Image 6 + Text */}
+        <div className="relative group rounded-2xl border border-white/10 bg-white/5 overflow-hidden shadow-lg">
+          <span className="absolute -inset-6 rounded-3xl blur-3xl opacity-40 bg-gradient-to-r from-blue-400/30 via-pink-400/30 to-green-500/30" aria-hidden="true" />
+          <img src="/6.jpg" alt="Nile University highlight" className="w-full max-h-[480px] object-cover" />
+          <div className="relative p-6">
+            <p className="text-white/90 leading-relaxed text-lg">
+              I am proud to be a graduate of Nile University, an institution that has played a key role in shaping my academic and professional journey. My years at the university provided me with a strong technical foundation, critical thinking skills, and exposure to real-world projects that challenged me to think outside the box. At Nile University, I not only studied the theoretical aspects of computer science but also applied my knowledge through hands-on experiences, teamwork, and research opportunities. It was here that I learned the value of persistence, collaboration, and innovation in the field of technology.
+            </p>
+          </div>
+        </div>
+
+        {/* Block 3: Image 2 + Text + Socials */}
+        <div className="relative group rounded-2xl border border-white/10 bg-white/5 overflow-hidden shadow-lg">
+          <span className="absolute -inset-6 rounded-3xl blur-3xl opacity-40 bg-gradient-to-r from-pink-400/30 via-blue-400/30 to-green-500/30" aria-hidden="true" />
+          <img src="/2.jpg" alt="Collaboration and connection" className="w-full max-h-[480px] object-cover" />
+          <div className="relative p-6">
+            <p className="text-white/90 leading-relaxed text-lg">
+              Thank you for visiting my page and taking the time to get to know more about me. I am always open to new opportunities, collaborations, and meaningful conversations in the world of technology and beyond. If you would like to work together, discuss ideas, or simply connect, please feel free to reach out. I believe that great things happen when people share knowledge and collaborate on building something bigger than themselves. Let’s create something impactful together!
+            </p>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <a
+                href="https://www.facebook.com/share/1Cku3ivj8f/"
+                target="_blank"
+                rel="noreferrer"
+                className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 border-2 border-blue-400/50 text-blue-300"
+              >
+                <span className="btn-gleam btn-gleam-blue" aria-hidden="true" />
+                <span className="btn-beam" aria-hidden="true" />
+                <Facebook size={16} />
+                <span className="relative z-10">Facebook</span>
+                <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50" aria-hidden="true" />
+              </a>
+
+              <a
+                href="https://wa.me/201227866673"
+                target="_blank"
+                rel="noreferrer"
+                className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-green-400/20 to-green-500/20 border-2 border-green-400/50 text-green-300"
+              >
+                <span className="btn-gleam btn-gleam-green" aria-hidden="true" />
+                <span className="btn-beam" aria-hidden="true" />
+                <Phone size={16} />
+                <span className="relative z-10">WhatsApp</span>
+                <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-green-400/50 to-green-500/50" aria-hidden="true" />
+              </a>
+
+              <a
+                href="https://www.linkedin.com/in/mohamed-atef-5b1a82351?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+                target="_blank"
+                rel="noreferrer"
+                className="group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2 bg-gradient-to-r from-blue-400/20 to-blue-500/20 border-2 border-blue-400/50 text-blue-300"
+              >
+                <span className="btn-gleam btn-gleam-blue" aria-hidden="true" />
+                <span className="btn-beam" aria-hidden="true" />
+                <Linkedin size={16} />
+                <span className="relative z-10">LinkedIn</span>
+                <span className="absolute -inset-1 rounded-full blur-2xl pointer-events-none opacity-60 animate-breathe bg-gradient-to-r from-blue-400/50 to-blue-500/50" aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -683,7 +757,7 @@ function App() {
         <Route path="/talk" element={<Talk />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Home />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

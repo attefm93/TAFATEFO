@@ -118,7 +118,9 @@ const Navbar: React.FC = () => {
             </button>
 
             <ul className="hidden md:flex md:flex-wrap items-center gap-3 md:gap-4 text-sm font-semibold">
-              {baseItems.map((item) => (
+              {baseItems
+                .filter((item) => !(item.to === '/login' && isLoggedIn))
+                .map((item) => (
                 <li key={item.to}>
                   <NavNeonButton to={item.to} variant={mode as Variant}>{item.label}</NavNeonButton>
                 </li>
@@ -166,7 +168,9 @@ const Navbar: React.FC = () => {
                     </button>
                   )}
                 </li>
-                {baseItems.map((item) => (
+                {baseItems
+                  .filter((item) => !(item.to === '/login' && isLoggedIn))
+                  .map((item) => (
                   <li key={item.to}>
                     <NavNeonButton to={item.to} variant={mode as Variant} className="w-full justify-center" onClick={() => setOpen(false)}>
                       {item.label}
