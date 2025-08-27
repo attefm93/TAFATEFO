@@ -231,7 +231,11 @@ function Skills() {
   ];
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
-      <div className="mx-auto max-w-7xl">
+      <div className="pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" style={{background:
+        'radial-gradient(900px 540px at 10% 0%, rgba(59,130,246,0.12), rgba(0,0,0,0)),'+
+        'radial-gradient(600px 400px at 90% 100%, rgba(236,72,153,0.10), rgba(0,0,0,0)),'+
+        'radial-gradient(700px 420px at 50% 50%, rgba(16,185,129,0.08), rgba(0,0,0,0))'}} />
+      <div className="mx-auto max-w-7xl relative">
         <div className="mb-10">
           <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-neon-strong">Skills</h3>
           <p className="mt-3 text-white/90 text-[1.05rem] md:text-lg leading-8 md:leading-9 tracking-wide font-medium text-neon-strong">
@@ -241,14 +245,17 @@ function Skills() {
 
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-5">
           {skills.map((s) => (
-            <div key={s.name} className="relative rounded-xl border border-white/10 bg-white/5 p-3 md:p-4 flex flex-col items-center justify-center text-center hover:border-white/20 transition">
-              <div className="absolute -inset-6 rounded-2xl blur-3xl opacity-30 bg-gradient-to-r from-green-400/20 via-pink-400/20 to-blue-500/20" aria-hidden="true" />
-              {s.icon ? (
-                <i className={`${s.icon} colored text-4xl md:text-5xl icon-neon`} aria-hidden="true" />
-              ) : (
-                <div className="w-14 h-14 rounded-full bg-white/10" />
-              )}
-              <span className="mt-2 text-sm md:text-base font-semibold text-neon-blue">{s.name}</span>
+            <div key={s.name} className="tilt-wrap">
+              <div className="shine-wrap relative rounded-xl border border-white/10 bg-white/5 p-3 md:p-4 flex flex-col items-center justify-center text-center hover:border-white/20 transition tilt-card">
+                <div className="absolute -inset-6 rounded-2xl blur-3xl opacity-30 bg-gradient-to-r from-green-400/20 via-pink-400/20 to-blue-500/20" aria-hidden="true" />
+                <div className="shine" aria-hidden="true" />
+                {s.icon ? (
+                  <i className={`${s.icon} colored text-4xl md:text-5xl icon-neon`} aria-hidden="true" />
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-white/10" />
+                )}
+                <span className="mt-2 text-sm md:text-base font-semibold text-neon-blue">{s.name}</span>
+              </div>
             </div>
           ))}
         </div>

@@ -28,6 +28,28 @@
     transform: translateY(-2px) scale(1.03);
     filter: drop-shadow(0 0 10px rgba(255,255,255,0.35)) drop-shadow(0 0 18px rgba(148,163,184,0.25));
   }
+  .tilt-wrap { perspective: 1000px; }
+  .tilt-card {
+    transform-style: preserve-3d;
+    transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  }
+  .tilt-card:hover {
+    transform: translateY(-6px) rotateX(4deg) rotateY(-4deg);
+    box-shadow: 0 12px 40px rgba(59,130,246,0.15), 0 0 40px rgba(236,72,153,0.12);
+  }
+  .shine-wrap { position: relative; overflow: hidden; }
+  .shine {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  .shine::before {
+    content: "";
+    position: absolute; inset: 0; width: 35%; height: 140%;
+    transform: translateX(-150%);
+    background: linear-gradient(90deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.0) 100%);
+    filter: blur(2px);
+    opacity: 0.65;
+    animation: sweep 2.8s linear infinite;
+  }
   .animate-gradient-x {
     background-size: 400% 400%;
     animation: gradient-x 4s ease infinite;
