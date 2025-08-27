@@ -8,6 +8,7 @@ import NeonButton from './components/NeonButton';
 import ProfileImage from './components/ProfileImage';
 import TypingText from './components/TypingText';
 import LoadingScreen from './components/LoadingScreen';
+import NotFound from './components/NotFound';
 import Navbar from './components/Navbar';
 import { supabase } from './lib/supabaseClient';
 function AdminGate({ onUnlock }: { onUnlock: () => void }) {
@@ -683,7 +684,7 @@ function App() {
         <Route path="/talk" element={<Talk />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Home />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
