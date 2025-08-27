@@ -72,6 +72,7 @@ function Home() {
 
 function Works() {
   const [isAdmin, setIsAdmin] = useState<boolean>(localStorage.getItem('isAdmin') === '1');
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [items, setItems] = useState<any[]>([]);
   const [loadingList, setLoadingList] = useState(true);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -91,7 +92,19 @@ function Works() {
     load();
     const onAdmin = (e: any) => setIsAdmin(!!e?.detail?.isAdmin);
     window.addEventListener('admin:changed', onAdmin);
-    return () => window.removeEventListener('admin:changed', onAdmin);
+    let mounted = true;
+    const syncAuth = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!mounted) return;
+      setIsLoggedIn(!!data.user);
+    };
+    syncAuth();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => syncAuth());
+    return () => {
+      window.removeEventListener('admin:changed', onAdmin);
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -140,7 +153,7 @@ function Works() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Our Works</h3>
-        {isAdmin && (
+        {(isAdmin || isLoggedIn) && (
           <form onSubmit={onSubmit} className="grid gap-4 max-w-2xl" encType="multipart/form-data">
             <input name="title" placeholder="Work Title" required className="px-4 py-3 rounded-lg neon-input" />
             <input name="description" placeholder="Short Description" className="px-4 py-3 rounded-lg neon-input" />
@@ -157,7 +170,7 @@ function Works() {
               {it.image_url && <img loading="lazy" src={it.image_url} alt={it.title} className="w-full h-48 object-cover rounded-lg mb-3" />}
               <h4 className="text-white font-semibold">{it.title}</h4>
               {it.description && <p className="text-white/70 text-sm mt-1">{it.description}</p>}
-              {isAdmin && (
+              {(isAdmin || isLoggedIn) && (
                 <div className="mt-3 flex gap-2">
                   <button onClick={async () => {
                     const newTitle = prompt('Edit title', it.title) || it.title;
@@ -247,6 +260,7 @@ function Contact() {
 function Certification() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(localStorage.getItem('isAdmin') === '1');
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [uploading, setUploading] = useState(false);
   const [items, setItems] = useState<any[]>([]);
   const [loadingList, setLoadingList] = useState(true);
@@ -265,7 +279,19 @@ function Certification() {
     load();
     const onAdmin = (e: any) => setIsAdmin(!!e?.detail?.isAdmin);
     window.addEventListener('admin:changed', onAdmin);
-    return () => window.removeEventListener('admin:changed', onAdmin);
+    let mounted = true;
+    const syncAuth = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!mounted) return;
+      setIsLoggedIn(!!data.user);
+    };
+    syncAuth();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => syncAuth());
+    return () => {
+      window.removeEventListener('admin:changed', onAdmin);
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -314,7 +340,7 @@ function Certification() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Certification</h3>
-        {isAdmin && (
+        {(isAdmin || isLoggedIn) && (
           <form onSubmit={onSubmit} className="grid gap-4 max-w-2xl" encType="multipart/form-data">
             <input name="certificateName" placeholder="Certificate Name" required className="px-4 py-3 rounded-lg neon-input" />
             <input name="certificateInfo" placeholder="Certificate Info" className="px-4 py-3 rounded-lg neon-input" />
@@ -333,7 +359,7 @@ function Certification() {
               {it.image_url && <img loading="lazy" src={it.image_url} alt={it.name} className="w-full h-48 object-cover rounded-lg mb-3" />}
               <h4 className="text-white font-semibold">{it.name}</h4>
               {it.info && <p className="text-white/70 text-sm mt-1">{it.info}</p>}
-              {isAdmin && (
+              {(isAdmin || isLoggedIn) && (
                 <div className="mt-3 flex gap-2">
                   <button onClick={async () => {
                     const newName = prompt('Edit name', it.name) || it.name;
