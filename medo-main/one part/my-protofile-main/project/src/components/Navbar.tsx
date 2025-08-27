@@ -26,14 +26,16 @@ const variants: Variant[] = ['green', 'pink', 'blue'];
 const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [modeIdx, setModeIdx] = useState(0);
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
   const [isAdmin, setIsAdmin] = useState<boolean>(typeof window !== 'undefined' && localStorage.getItem('isAdmin') === '1');
 
   useEffect(() => {
+    if (isMobile) return; // stop rotating mode on mobile to reduce churn
     const id = setInterval(() => {
       setModeIdx((i) => (i + 1) % variants.length);
-    }, 1500); // rotate between green, pink, blue every 1.5s
+    }, 1500);
     return () => clearInterval(id);
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const onAdmin = (e: any) => setIsAdmin(!!e?.detail?.isAdmin);
@@ -52,7 +54,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="fixed top-0 inset-x-0 z-30">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 backdrop-blur-md shadow-lg shadow-black/20">
+        <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 md:bg-black/30 md:backdrop-blur-md shadow-lg shadow-black/20">
           <div className="flex items-center justify-between px-4 py-3 md:px-6">
             <LogoMark />
 
@@ -90,7 +92,7 @@ const Navbar: React.FC = () => {
               <ul className="grid gap-2">
                 {baseItems.map((item) => (
                   <li key={item.to}>
-                    <NavNeonButton to={item.to} variant={mode as Variant} className="w-full justify-center" onClick={() => setOpen(false)}>
+                    <NavNeonButton lite to={item.to} variant={mode as Variant} className="w-full justify-center" onClick={() => setOpen(false)}>
                       {item.label}
                     </NavNeonButton>
                   </li>

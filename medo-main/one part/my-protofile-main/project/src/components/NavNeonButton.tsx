@@ -9,15 +9,28 @@ interface NavNeonButtonProps {
   variant?: Variant;
   className?: string;
   onClick?: () => void;
+  lite?: boolean;
 }
 
-const NavNeonButton: React.FC<NavNeonButtonProps> = ({ to, children, variant = 'green', className = '', onClick }) => {
+const NavNeonButton: React.FC<NavNeonButtonProps> = ({ to, children, variant = 'green', className = '', onClick, lite = false }) => {
   const [isHover, setIsHover] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
 
   const shouldBlue = isHover || isActive || isFocus;
   const effective: Variant = shouldBlue ? 'blue' : variant;
+
+  if (lite) {
+    return (
+      <NavLink
+        to={to}
+        onClick={onClick}
+        className={`px-4 py-2 rounded-full border border-white/15 bg-black/30 text-white/85 hover:text-white transition ${className}`}
+      >
+        {children}
+      </NavLink>
+    );
+  }
 
   const baseClasses = "group relative px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 active:scale-95 flex items-center gap-2";
   const variantClasses: Record<Variant, string> = {
