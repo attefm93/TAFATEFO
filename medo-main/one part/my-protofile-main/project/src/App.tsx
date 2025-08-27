@@ -387,6 +387,32 @@ function Certification() {
 function Rating() {
   const [stars, setStars] = useState(0);
   const [hover, setHover] = useState<number | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  React.useEffect(() => {
+    const load = async () => {
+      try {
+        const { data, error } = await supabase.from('ratings').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        setItems(data || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+    let mounted = true;
+    const syncAuth = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!mounted) return;
+      setIsLoggedIn(!!data.user);
+    };
+    syncAuth();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => syncAuth());
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
+  }, []);
   const Star = ({ index }: { index: number }) => {
     const active = (hover ?? stars) >= index;
     return (
@@ -418,7 +444,7 @@ function Rating() {
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-6xl">
         <h3 className="text-3xl font-bold text-white mb-6">Rating</h3>
-        <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const feedback = String(form.get('feedback')||''); try { const { error } = await supabase.from('ratings').insert({ stars, feedback }); if (error) throw error; alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } }} className="grid gap-4 max-w-2xl">
+        <form onSubmit={async (e) => { e.preventDefault(); const form = new FormData(e.currentTarget); const feedback = String(form.get('feedback')||''); try { const { data: sessionData } = await supabase.auth.getSession(); if (!sessionData.session?.user) { alert('Please login to submit a rating.'); return; } const user = sessionData.session.user; const meta: any = user.user_metadata || {}; const userName = meta.full_name || [meta.first_name, meta.last_name].filter(Boolean).join(' ') || user.email || 'User'; const userAvatar = meta.avatar_url || meta.picture || null; const payload: any = { stars, feedback, created_by: user.id, user_name: userName, user_avatar_url: userAvatar }; const { error } = await supabase.from('ratings').insert(payload); if (error) throw error; alert('Thanks for your rating!'); (e.target as HTMLFormElement).reset(); setStars(0); setHover(null); } catch (err: any) { alert('Failed: '+(err?.message||String(err))); } }} className="grid gap-4 max-w-2xl">
           <div className="orbit">
             {[1,2,3,4,5].map((i) => (
               <div key={i} className="orbit-item orbit-spin" style={{ transform: `rotate(${(i-1)*72}deg)` }}>
@@ -427,8 +453,37 @@ function Rating() {
             ))}
           </div>
           <textarea name="feedback" placeholder="Write your feedback" rows={4} className="px-4 py-3 rounded-lg neon-input" />
-          <button type="submit" className="px-6 py-3 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white font-semibold w-max">Submit</button>
+          <button type="submit" disabled={!isLoggedIn} className="px-6 py-3 rounded-lg bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 text-white font-semibold w-max">{isLoggedIn ? 'Submit' : 'Login to submit'}</button>
         </form>
+        <div className="mt-10 max-w-3xl">
+          <h4 className="text-2xl font-bold text-white mb-4">Recent ratings</h4>
+          {loading && <p className="text-white/60">Loading...</p>}
+          {!loading && items.length === 0 && <p className="text-white/60">No ratings yet.</p>}
+          <div className="grid gap-4">
+            {items.map((r) => {
+              const name = r.user_name || 'User';
+              const avatar = r.user_avatar_url || null;
+              const initials = String(name).trim().split(/\s+/).slice(0,2).map((s: string) => s[0]?.toUpperCase()).join('') || 'U';
+              return (
+                <div key={r.id} className="rounded-xl border border-white/10 bg-white/5 p-4 flex gap-3 items-start">
+                  {avatar ? (
+                    <img src={avatar} alt={name} className="w-10 h-10 rounded-full border border-white/20 object-cover" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white/80 flex items-center justify-center text-sm font-bold">{initials}</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold truncate">{name}</span>
+                      <span className="text-yellow-400">{'★'.repeat(Math.max(1, Math.min(5, r.stars || 0)))}</span>
+                    </div>
+                    {r.feedback && <p className="text-white/80 text-sm mt-1 break-words">{r.feedback}</p>}
+                    <p className="text-white/40 text-xs mt-1">{new Date(r.created_at).toLocaleString()}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
