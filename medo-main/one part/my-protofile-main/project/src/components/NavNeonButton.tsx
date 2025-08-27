@@ -10,9 +10,10 @@ interface NavNeonButtonProps {
   className?: string;
   onClick?: () => void;
   lite?: boolean;
+  noBeam?: boolean;
 }
 
-const NavNeonButton: React.FC<NavNeonButtonProps> = ({ to, children, variant = 'green', className = '', onClick, lite = false }) => {
+const NavNeonButton: React.FC<NavNeonButtonProps> = ({ to, children, variant = 'green', className = '', onClick, lite = false, noBeam = false }) => {
   const [isHover, setIsHover] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
@@ -60,12 +61,14 @@ const NavNeonButton: React.FC<NavNeonButtonProps> = ({ to, children, variant = '
     >
       {/* base gleam + beam (blue when shouldBlue) */}
       <span className={`btn-gleam ${baseGleamClass}`} aria-hidden="true" />
-      <span className="btn-beam" aria-hidden="true" />
+      {!noBeam && <span className="btn-beam" aria-hidden="true" />}
 
       {/* blue moving sweep only when blue state */}
-      <span className="absolute inset-0 rounded-full overflow-hidden pointer-events-none" aria-hidden="true">
-        <span className={`h-full w-1/3 translate-x-[-150%] animate-sweep ${shouldBlue ? 'opacity-70' : 'opacity-0'} bg-gradient-to-r from-blue-400/50 via-blue-300/40 to-transparent transition-opacity duration-150`} />
-      </span>
+      {!noBeam && (
+        <span className="absolute inset-0 rounded-full overflow-hidden pointer-events-none" aria-hidden="true">
+          <span className={`h-full w-1/3 translate-x-[-150%] animate-sweep ${shouldBlue ? 'opacity-70' : 'opacity-0'} bg-gradient-to-r from-blue-400/50 via-blue-300/40 to-transparent transition-opacity duration-150`} />
+        </span>
+      )}
 
       <span className={`relative z-10 ${shouldBlue ? 'text-blue-400' : ''}`}>{children}</span>
 

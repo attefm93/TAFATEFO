@@ -30,10 +30,10 @@ const Navbar: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(typeof window !== 'undefined' && localStorage.getItem('isAdmin') === '1');
 
   useEffect(() => {
-    if (isMobile) return; // stop rotating mode on mobile to reduce churn
+    const intervalMs = isMobile ? 3000 : 1500; // slower rotation on mobile
     const id = setInterval(() => {
       setModeIdx((i) => (i + 1) % variants.length);
-    }, 1500);
+    }, intervalMs);
     return () => clearInterval(id);
   }, [isMobile]);
 
@@ -92,7 +92,7 @@ const Navbar: React.FC = () => {
               <ul className="grid gap-2">
                 {baseItems.map((item) => (
                   <li key={item.to}>
-                    <NavNeonButton lite to={item.to} variant={mode as Variant} className="w-full justify-center" onClick={() => setOpen(false)}>
+                    <NavNeonButton to={item.to} variant={mode as Variant} noBeam className="w-full justify-center" onClick={() => setOpen(false)}>
                       {item.label}
                     </NavNeonButton>
                   </li>
