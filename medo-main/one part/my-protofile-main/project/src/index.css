@@ -389,11 +389,11 @@
     transform-style: preserve-3d;
     transition: transform .25s ease-out;
     filter: drop-shadow(0 10px 24px rgba(0,0,0,0.35));
-    translate: 16% 110px; /* يمين وبعيد لأسفل */
+    translate: 26% 110px; /* يمين أكثر */
   }
 
   @media (max-width: 640px) {
-    .vhg-gallery { translate: 12% 80px; }
+    .vhg-gallery { translate: 20% 80px; }
   }
   /* removed offset; we'll center using the square container */
   .vhg-card { position: absolute; transform-style: preserve-3d; will-change: transform; }
