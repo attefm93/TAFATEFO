@@ -1,5 +1,5 @@
 import React from 'react';
-import HologramSemiCircle from '../components/HologramSemiCircle';
+import VanillaHologramAbout from '../components/VanillaHologramAbout';
 
 export default function About() {
   return (
@@ -13,34 +13,25 @@ export default function About() {
               'radial-gradient(900px 540px at 10% 0%, rgba(59,130,246,0.12), rgba(0,0,0,0)),'+
               'radial-gradient(600px 400px at 90% 100%, rgba(236,72,153,0.10), rgba(0,0,0,0))'
           }} />
-          <HologramSemiCircle
-            captionSide="right"
-            panels={[
-              {
-                src: '/1.jpg',
-                alt: 'Mohamed Atef portrait',
-                text:
-                  'Hello! My name is Mohamed Atef, and I am a dedicated software developer with a strong passion for building creative digital solutions. From the very first time I wrote a line of code, I knew that programming was not just a career choice for me, but a lifelong journey of learning, problem-solving, and innovation.',
-              },
-              {
-                src: '/6.jpg',
-                alt: 'Nile University highlight',
-                text:
-                  'I am proud to be a graduate of Nile University, which shaped my academic and professional journey with a strong technical foundation, critical thinking, and real-world projects that taught me collaboration and innovation.',
-              },
-              {
-                src: '/2.jpg',
-                alt: 'Collaboration and connection',
-                text:
-                  'I am always open to new opportunities and meaningful collaborations. If you would like to work together or discuss ideas, feel free to reach out—let’s create something impactful together!',
-              },
-            ]}
-          />
+          <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center">
+            <div>
+              <VanillaHologramAbout
+                panels={[
+                  { src: '/1.jpg', alt: 'Mohamed Atef portrait' },
+                  { src: '/6.jpg', alt: 'Nile University highlight' },
+                  { src: '/2.jpg', alt: 'Collaboration and connection' },
+                ]}
+              />
+            </div>
+            <div className="space-y-4 md:space-y-5">
+              <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">Hello! My name is Mohamed Atef, and I am a dedicated software developer with a strong passion for building creative digital solutions. From the very first time I wrote a line of code, I knew that programming was not just a career choice for me, but a lifelong journey of learning, problem-solving, and innovation.</p></div>
+              <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">I am proud to be a graduate of Nile University, which shaped my academic and professional journey with a strong technical foundation, critical thinking, and real-world projects that taught me collaboration and innovation.</p></div>
+              <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">I am always open to new opportunities and meaningful collaborations. If you would like to work together or discuss ideas, feel free to reach out—let’s create something impactful together!</p></div>
+            </div>
+          </div>
         </div>
 
-        
       </div>
     </div>
   );
 }
-
