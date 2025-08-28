@@ -7,4 +7,16 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          three: ['three'],
+          supabase: ['@supabase/supabase-js'],
+          ui_icons: ['lucide-react'],
+        },
+      },
+    },
+  },
 });
