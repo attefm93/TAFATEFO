@@ -59,9 +59,12 @@ export default function About() {
 
               <VanillaHologramAbout
                 panels={[
-                  { src: '/1.jpg', alt: 'Mohamed Atef portrait' },
-                  { src: '/2.jpg', alt: 'Collaboration and connection' },
-                  { src: '/6.jpg', alt: 'Nile University highlight' },
+                  { src: '/1.jpg', alt: 'Watch gallery 1' },
+                  { src: '/2.jpg', alt: 'Watch gallery 2' },
+                  { src: '/3.jpg', alt: 'Watch gallery 3' },
+                  { src: '/4.jpg', alt: 'Watch gallery 4' },
+                  { src: '/5.jpg', alt: 'Watch gallery 5' },
+                  { src: '/6.jpg', alt: 'Watch gallery 6' },
                 ]}
                 onSelect={(i) => setActiveIdx(i)}
               />
