@@ -4,6 +4,7 @@ type Panel = { src: string; alt: string };
 
 interface Props {
   panels: [Panel, Panel, Panel];
+  onSelect?: (index: number) => void;
 }
 
 /**
@@ -11,7 +12,7 @@ interface Props {
  * Mirrors the shared snippet: cards distributed on an arc, neon cyan edges, parallax orbit,
  * click-to-focus brings the card forward.
  */
-export default function VanillaHologramAbout({ panels }: Props) {
+export default function VanillaHologramAbout({ panels, onSelect }: Props) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const galleryRef = useRef<HTMLDivElement | null>(null);
 
@@ -24,6 +25,7 @@ export default function VanillaHologramAbout({ panels }: Props) {
     panels.forEach((p, i) => {
       const card = document.createElement('figure');
       card.className = 'vhg-card';
+      (card as any).dataset.index = String(i);
 
       const inner = document.createElement('div');
       inner.className = 'vhg-inner';
@@ -50,9 +52,9 @@ export default function VanillaHologramAbout({ panels }: Props) {
       const rect = gallery.getBoundingClientRect();
       const w = rect.width || window.innerWidth;
       const isNarrow = w < 520;
-      const arc = isNarrow ? 110 : 140; // degrees, tighter arc to fit inside column box
-      const radius = w * (isNarrow ? 0.45 : 0.5);
-      const spreadY = isNarrow ? 12 : 20;
+      const arc = isNarrow ? 90 : 110; // tighter to fit box
+      const radius = w * (isNarrow ? 0.36 : 0.42);
+      const spreadY = isNarrow ? 8 : 12;
       cards.forEach((card, i) => {
         const t = N === 1 ? 0.5 : i / (N - 1);
         const angle = (t - 0.5) * arc; // -arc/2 .. +arc/2
@@ -84,6 +86,8 @@ export default function VanillaHologramAbout({ panels }: Props) {
       const target = e.target as HTMLElement | null;
       const card = target?.closest('.vhg-card') as HTMLElement | null;
       if (!card) return;
+      const idxStr = (card as any).dataset?.index as string | undefined;
+      const idx = idxStr ? parseInt(idxStr, 10) : -1;
       const focused = gallery.querySelector('.vhg-card.is-focus') as HTMLElement | null;
       if (focused && focused !== card) focused.classList.remove('is-focus');
       card.classList.toggle('is-focus');
@@ -94,6 +98,7 @@ export default function VanillaHologramAbout({ panels }: Props) {
       const baseZ = m ? parseFloat(m[1]) : 0;
       card.style.transform = t.replace(/translateZ\(([-\d.]+)px\)/, `translateZ(${baseZ + boost}px)`);
       window.setTimeout(() => (card.style.transition = ''), 400);
+      if (onSelect && idx >= 0) onSelect(idx);
     };
 
     const raf = () => {

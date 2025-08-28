@@ -2,6 +2,7 @@ import React from 'react';
 import VanillaHologramAbout from '../components/VanillaHologramAbout';
 
 export default function About() {
+  const [activeIdx, setActiveIdx] = React.useState<number>(0);
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-5xl space-y-10">
@@ -21,12 +22,19 @@ export default function About() {
                   { src: '/2.jpg', alt: 'Collaboration and connection' },
                   { src: '/6.jpg', alt: 'Nile University highlight' },
                 ]}
+                onSelect={(i) => setActiveIdx(i)}
               />
             </div>
             <div className="space-y-4 md:space-y-5">
-              <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">Hello! My name is Mohamed Atef, and I am a dedicated software developer with a strong passion for building creative digital solutions. From the very first time I wrote a line of code, I knew that programming was not just a career choice for me, but a lifelong journey of learning, problem-solving, and innovation.</p></div>
-              <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">I am proud to be a graduate of Nile University, which shaped my academic and professional journey with a strong technical foundation, critical thinking, and real-world projects that taught me collaboration and innovation.</p></div>
-              <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">I am always open to new opportunities and meaningful collaborations. If you would like to work together or discuss ideas, feel free to reach out—let’s create something impactful together!</p></div>
+              {activeIdx === 0 && (
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">Hello! My name is Mohamed Atef, and I am a dedicated software developer with a strong passion for building creative digital solutions. From the very first time I wrote a line of code, I knew that programming was not just a career choice for me, but a lifelong journey of learning, problem-solving, and innovation.</p></div>
+              )}
+              {activeIdx === 1 && (
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">I believe in collaboration and building meaningful connections. If you would like to work together, discuss ideas, or simply connect, I’m always open to conversations that create impact.</p></div>
+              )}
+              {activeIdx === 2 && (
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">I am proud to be a graduate of Nile University, which shaped my academic and professional journey with a strong technical foundation, critical thinking, and real-world projects.</p></div>
+              )}
             </div>
           </div>
         </div>
