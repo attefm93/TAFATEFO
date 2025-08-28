@@ -356,14 +356,18 @@ function Contact() {
       setSubmitting(true);
       const { error } = await supabase.from('contact_messages').insert(payload);
       if (error) throw error;
-      try {
-        await fetch('/.netlify/functions/contact-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } catch {}
-      alert('Message sent!');
+      // Open Gmail compose (fallback to mailto) with prefilled content
+      const to = 'eleanoretftf301@gmail.com';
+      const fullName = [payload.first_name, payload.middle_name, payload.last_name].filter(Boolean).join(' ').trim() || 'Visitor';
+      const subject = `New contact message from ${fullName}`;
+      const body = `Name: ${fullName}\nPhone: ${payload.phone || 'N/A'}\n\nMessage:\n${payload.message || ''}`;
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const mailtoUrl = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const win = window.open(gmailUrl, '_blank');
+      if (!win) {
+        window.location.href = mailtoUrl;
+      }
+      alert('Opening your email app to send...');
       (e.target as HTMLFormElement).reset();
     } catch (err: any) {
       alert('Failed to send: ' + (err?.message || String(err)));
