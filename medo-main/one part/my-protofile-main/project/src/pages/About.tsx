@@ -26,7 +26,7 @@ export default function About() {
               'radial-gradient(900px 540px at 10% 0%, rgba(59,130,246,0.12), rgba(0,0,0,0)),'+
               'radial-gradient(600px 400px at 90% 100%, rgba(236,72,153,0.10), rgba(0,0,0,0))'
           }} />
-          <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center">
+          <div className="space-y-6">
             <div className="relative rounded-2xl border border-white/10 bg-black/20 p-3 overflow-hidden">
               {/* HUD overlay */}
               <div className="pointer-events-none absolute inset-0">

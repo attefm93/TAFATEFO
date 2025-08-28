@@ -47,7 +47,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
     });
 
     // Prepare ring layout: full 360°; transforms computed each frame to allow spinning
-    let ringRadius = 420;
+    let ringRadius = 520; // توسعة المسافة لتناسب الكروت الأكبر
     let spreadY = 10;
     const cardAngles: number[] = [];
     const computeLayout = () => {
@@ -57,7 +57,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       const w = rect.width || window.innerWidth;
       const isNarrow = w < 520;
       ringRadius = w * (isNarrow ? 0.36 : 0.42);
-      spreadY = isNarrow ? 6 : 10;
+      spreadY = isNarrow ? 8 : 14;
       cardAngles.length = 0;
       cards.forEach((_, i) => {
         const angle = (i / N) * 360; // full ring

@@ -393,8 +393,8 @@
   /* removed offset; we'll center using the square container */
   .vhg-card { position: absolute; transform-style: preserve-3d; will-change: transform; }
   .vhg-inner {
-    width: clamp(140px, 22vw, 190px); /* حجم أصغر وشيك */
-    aspect-ratio: 3 / 4;
+    width: clamp(180px, 28vw, 260px); /* أكبر وأعرض */
+    aspect-ratio: 3 / 4.2; /* أطول قليلاً لراحة الصورة */
     border-radius: 18px;
     overflow: hidden;
     background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
