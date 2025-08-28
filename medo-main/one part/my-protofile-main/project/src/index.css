@@ -320,6 +320,7 @@
     align-items: center;
     justify-content: center;
   }
+  .holo-stage-compact { height: 420px; }
   .holo-panel {
     position: absolute;
     width: clamp(180px, 22vw, 280px);
