@@ -128,8 +128,8 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
     const raf = () => {
       state.ry += (state.try - state.ry) * damp;
       state.rx += (state.trx - state.rx) * damp;
-      // auto spin + inertia from drag; slow when focused
-      const baseAuto = focusedIdx !== null ? 0.04 : 0.35;
+      // auto spin عكسي (يمين -> شمال) وباستمرار بدون إعادة ضبط
+      const baseAuto = focusedIdx !== null ? -0.04 : -0.35;
       state.spin += baseAuto + vel;
       vel *= 0.94; // decay
 

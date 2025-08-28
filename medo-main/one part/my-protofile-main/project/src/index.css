@@ -378,7 +378,7 @@
     position: relative;
     display: grid;
     place-items: center;
-    height: min(58vh, 560px); /* مساحة أكبر للكروت الأطول */
+    height: min(66vh, 680px); /* مساحة أكبر للكروت الأطول */
     perspective: 1100px;
     perspective-origin: 50% 40%;
   }
