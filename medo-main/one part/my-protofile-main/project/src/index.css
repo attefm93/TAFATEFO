@@ -378,7 +378,7 @@
     position: relative;
     display: grid;
     place-items: center;
-    height: min(46vh, 420px); /* أصغر لتدخل جوه المربع */
+    height: min(60vh, 520px); /* تكبير مساحة العرض لمنع القص */
     perspective: 1100px;
     perspective-origin: 50% 40%;
   }
@@ -391,7 +391,7 @@
   }
   .vhg-card { position: absolute; transform-style: preserve-3d; will-change: transform; }
   .vhg-inner {
-    width: min(180px, 26vw); /* تصغير البطاقات */
+    width: min(240px, 32vw); /* تكبير البطاقات */
     aspect-ratio: 3 / 4;
     border-radius: 18px;
     overflow: hidden;
