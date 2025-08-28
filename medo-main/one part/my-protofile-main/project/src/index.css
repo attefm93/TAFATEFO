@@ -389,13 +389,7 @@
     transform-style: preserve-3d;
     transition: transform .25s ease-out;
   }
-  .vhg-offset {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    transform: translate(6%, 6%); /* يمين وتحت شوية */
-  }
+  /* removed offset; we'll center using the square container */
   .vhg-card { position: absolute; transform-style: preserve-3d; will-change: transform; }
   .vhg-inner {
     width: min(180px, 26vw); /* تصغير البطاقات */

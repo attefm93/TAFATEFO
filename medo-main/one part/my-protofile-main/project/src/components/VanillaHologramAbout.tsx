@@ -128,9 +128,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
   return (
     <div ref={rootRef} className="relative">
       <div className="vhg-stage">
-        <div className="vhg-offset">
-          <div ref={galleryRef} className="vhg-gallery" aria-label="3D floating image gallery" />
-        </div>
+        <div ref={galleryRef} className="vhg-gallery" aria-label="3D floating image gallery" />
       </div>
     </div>
   );

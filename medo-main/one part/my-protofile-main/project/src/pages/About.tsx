@@ -15,7 +15,7 @@ export default function About() {
               'radial-gradient(600px 400px at 90% 100%, rgba(236,72,153,0.10), rgba(0,0,0,0))'
           }} />
           <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center">
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-3 aspect-square grid place-items-center">
               <VanillaHologramAbout
                 panels={[
                   { src: '/1.jpg', alt: 'Mohamed Atef portrait' },
