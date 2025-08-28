@@ -378,7 +378,7 @@
     position: relative;
     display: grid;
     place-items: center;
-    height: min(46vh, 420px); /* تصغير المساحة لتكون وسط الصندوق */
+    height: 100%; /* املا المربع بالكامل لضمان الحلقة */
     perspective: 1100px;
     perspective-origin: 50% 40%;
   }
@@ -388,10 +388,11 @@
     height: 100%;
     transform-style: preserve-3d;
     transition: transform .25s ease-out;
+    transform-origin: 50% 50%;
     filter: drop-shadow(0 10px 24px rgba(0,0,0,0.35));
   }
   /* removed offset; we'll center using the square container */
-  .vhg-card { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; will-change: transform; }
+  .vhg-card { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; will-change: transform; transform-origin: 50% 50%; }
   .vhg-inner {
     width: clamp(140px, 22vw, 190px); /* حجم أصغر وشيك */
     aspect-ratio: 3 / 4;

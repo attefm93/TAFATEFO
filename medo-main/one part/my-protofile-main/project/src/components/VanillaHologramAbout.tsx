@@ -50,9 +50,9 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       const cards = Array.from(gallery.querySelectorAll<HTMLElement>('.vhg-card'));
       const N = cards.length || 1;
       const rect = gallery.getBoundingClientRect();
-      const w = rect.width || window.innerWidth;
+      const w = Math.min(rect.width, rect.height) || window.innerWidth; // حلقة داخل المربع
       const isNarrow = w < 520;
-      const radius = w * (isNarrow ? 0.34 : 0.38);
+      const radius = w * (isNarrow ? 0.36 : 0.42);
       const spreadY = isNarrow ? 6 : 10;
       const maxBlur = isNarrow ? 2.2 : 2.8; // depth of field amount
       cards.forEach((card, i) => {
@@ -65,7 +65,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
         const closeness = Math.cos(rad);
         const blur = Math.max(0, (1 - Math.abs(closeness)) * maxBlur);
         card.style.setProperty('--vhg-blur', `${blur.toFixed(2)}px`);
-        card.style.transform = `translate(-50%, -50%) rotateX(-6deg) rotateY(${angle}deg) translateZ(${z}px) translateY(${y}px) rotateY(${-angle}deg)`;
+        card.style.transform = `translate(-50%, -50%) rotateX(-8deg) rotateY(${angle}deg) translateZ(${z}px) translateY(${y}px) rotateY(${-angle}deg)`;
       });
     };
     layoutCards();
@@ -109,7 +109,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
     const raf = () => {
       state.ry += (state.try - state.ry) * damp;
       state.rx += (state.trx - state.rx) * damp;
-      state.orbit = (state.orbit + 0.08) % 360; // slow auto orbit
+      state.orbit = (state.orbit + 0.10) % 360; // الدوران المستمر
       gallery.style.transform = `rotateY(${state.ry + state.orbit}deg) rotateX(${state.rx}deg)`;
       requestAnimationFrame(raf);
     };
