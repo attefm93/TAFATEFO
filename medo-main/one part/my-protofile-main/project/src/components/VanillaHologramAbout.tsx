@@ -21,7 +21,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
     const root = rootRef.current!;
     // Cleanup any previous
     gallery.innerHTML = '';
-    // Build orbit cards (all images orbit)
+    // Build cards
     panels.forEach((p, i) => {
       const card = document.createElement('figure');
       card.className = 'vhg-card';
@@ -45,33 +45,28 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       gallery.appendChild(card);
     });
 
-    // Layout cards on a full 360° carousel around the center
+    // Layout cards on a semi-circle
     const layoutCards = () => {
       const cards = Array.from(gallery.querySelectorAll<HTMLElement>('.vhg-card'));
-      const N = cards.length || 1; // orbit count only
+      const N = cards.length || 1;
       const rect = gallery.getBoundingClientRect();
-      const w = Math.min(rect.width, rect.height) || window.innerWidth; // ring fits the square
+      const w = rect.width || window.innerWidth;
       const isNarrow = w < 520;
-      const radius = w * (isNarrow ? 0.28 : 0.32); // tighter radius to shrink left/right gap
-      const spreadY = isNarrow ? 4 : 6; // less vertical spread
-      const maxBlur = isNarrow ? 2.2 : 2.8; // depth of field amount
+      const arc = isNarrow ? 90 : 110; // tighter to fit box
+      const radius = w * (isNarrow ? 0.36 : 0.42);
+      const spreadY = isNarrow ? 8 : 12;
       cards.forEach((card, i) => {
-        const t = N === 0 ? 0 : i / N; // 0..(N-1)/N
-        const angle = t * 360; // distribute evenly
-        const rad = (angle * Math.PI) / 180;
-        const y = Math.sin(t * Math.PI * 2) * spreadY;
+        const t = N === 1 ? 0.5 : i / (N - 1);
+        const angle = (t - 0.5) * arc; // -arc/2 .. +arc/2
+        const y = Math.sin((i / N) * Math.PI * 2) * spreadY;
         const z = radius;
-        // closeness to camera when facing front (angle ≈ 0 or 360)
-        const closeness = Math.cos(rad);
-        const blur = Math.max(0, (1 - Math.abs(closeness)) * maxBlur);
-        card.style.setProperty('--vhg-blur', `${blur.toFixed(2)}px`);
-        card.style.transform = `translate(-50%, -50%) rotateX(-8deg) rotateY(${angle}deg) translateZ(${z}px) translateY(${y}px) rotateY(${-angle}deg)`;
+        card.style.transform = `rotateY(${angle}deg) translateZ(${z}px) translateY(${y}px) rotateY(${-angle}deg)`;
       });
     };
     layoutCards();
 
     // Parallax orbit on pointer move
-    const state = { rx: 0, ry: 0, trx: 0, try: 0, orbit: 0 };
+    const state = { rx: 0, ry: 0, trx: 0, try: 0 };
     const damp = 0.06;
     const onPointerMove = (clientX: number, clientY: number) => {
       const rect = gallery.getBoundingClientRect();
@@ -109,8 +104,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
     const raf = () => {
       state.ry += (state.try - state.ry) * damp;
       state.rx += (state.trx - state.rx) * damp;
-      state.orbit = (state.orbit + 0.10) % 360; // الدوران المستمر
-      gallery.style.transform = `rotateY(${state.ry + state.orbit}deg) rotateX(${state.rx}deg)`;
+      gallery.style.transform = `rotateY(${state.ry}deg) rotateX(${state.rx}deg)`;
       requestAnimationFrame(raf);
     };
 

@@ -378,7 +378,7 @@
     position: relative;
     display: grid;
     place-items: center;
-    height: 100%; /* املا المربع بالكامل لضمان الحلقة */
+    height: min(46vh, 420px); /* تصغير المساحة لتكون وسط الصندوق */
     perspective: 1100px;
     perspective-origin: 50% 40%;
   }
@@ -388,11 +388,10 @@
     height: 100%;
     transform-style: preserve-3d;
     transition: transform .25s ease-out;
-    transform-origin: 50% 50%;
     filter: drop-shadow(0 10px 24px rgba(0,0,0,0.35));
   }
   /* removed offset; we'll center using the square container */
-  .vhg-card { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; will-change: transform; transform-origin: 50% 50%; }
+  .vhg-card { position: absolute; transform-style: preserve-3d; will-change: transform; }
   .vhg-inner {
     width: clamp(140px, 22vw, 190px); /* حجم أصغر وشيك */
     aspect-ratio: 3 / 4;
@@ -425,8 +424,6 @@
     opacity: .6; pointer-events: none;
   }
   .vhg-inner img { width: 100%; height: 100%; object-fit: cover; filter: saturate(1.05) contrast(1.03); opacity: .98; display: block; }
-  .vhg-center .vhg-inner { width: clamp(180px, 28vw, 240px); }
-  .vhg-center .vhg-inner::after { box-shadow: 0 0 26px rgba(34,230,255,0.6), inset 0 0 18px rgba(34,230,255,.35); }
   .vhg-shadow { position: absolute; left: 50%; top: 100%; width: 65%; height: 16px; transform: translateX(-50%); background: radial-gradient(50% 100% at 50% 50%, rgba(0,0,0,.45), transparent 70%); filter: blur(6px); }
   @keyframes bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-12px) } }
 }
