@@ -9,6 +9,7 @@ type ContactPayload = {
 };
 
 const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || '';
+const CONTACT_FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || '';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 
 export const handler: Handler = async (event) => {
@@ -63,11 +64,12 @@ export const handler: Handler = async (event) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Portfolio <onboarding@resend.dev>',
+        from: CONTACT_FROM_EMAIL || 'Portfolio <onboarding@resend.dev>',
         to: [CONTACT_TO_EMAIL],
         subject,
         text,
         html,
+        reply_to: CONTACT_TO_EMAIL,
       }),
     });
 
