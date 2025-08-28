@@ -8,6 +8,7 @@ const Home = React.lazy(() => import('./pages/Home'));
 const Works = React.lazy(() => import('./pages/Works'));
 const Skills = React.lazy(() => import('./pages/Skills'));
 const About = React.lazy(() => import('./pages/About'));
+const Gallery = React.lazy(() => import('./pages/Gallery'));
 const Certification = React.lazy(() => import('./pages/Certification'));
 const Rating = React.lazy(() => import('./pages/Rating'));
 const Talk = React.lazy(() => import('./pages/Talk'));
@@ -31,6 +32,7 @@ export default function AppRoutes() {
           <Route path="/works" element={<Works />} />
           <Route path="/skills" element={<Skills />} />
           <Route path="/about" element={<About />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/certification" element={<Certification />} />
           <Route path="/rating" element={<Rating />} />
           <Route path="/talk" element={<Talk />} />

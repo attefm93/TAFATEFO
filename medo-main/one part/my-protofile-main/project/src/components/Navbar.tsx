@@ -15,6 +15,7 @@ const baseItems: NavItem[] = [
   { label: 'OUR WORKS', to: '/works' },
   { label: 'SKILLS', to: '/skills' },
   { label: 'ABOUT', to: '/about' },
+  { label: 'GALLERY', to: '/gallery' },
   { label: 'CERTIFICATION', to: '/certification' },
   { label: 'RATING', to: '/rating' },
   { label: 'TALK', to: '/talk' },
