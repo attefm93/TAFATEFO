@@ -1,8 +1,20 @@
 import React from 'react';
 import VanillaHologramAbout from '../components/VanillaHologramAbout';
+import { Battery, HeartPulse, Sun, CloudRain } from 'lucide-react';
 
 export default function About() {
   const [activeIdx, setActiveIdx] = React.useState<number>(0);
+  const [timeStr, setTimeStr] = React.useState<string>(() => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  const [batteryPct] = React.useState<number>(75);
+  const [heartBpm] = React.useState<number>(70);
+
+  React.useEffect(() => {
+    const id = window.setInterval(() => {
+      setTimeStr(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    }, 1000 * 30);
+    return () => window.clearInterval(id);
+  }, []);
+
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-5xl space-y-10">
@@ -15,7 +27,36 @@ export default function About() {
               'radial-gradient(600px 400px at 90% 100%, rgba(236,72,153,0.10), rgba(0,0,0,0))'
           }} />
           <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center">
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+            <div className="relative rounded-2xl border border-white/10 bg-black/20 p-3 overflow-hidden">
+              {/* HUD overlay */}
+              <div className="pointer-events-none absolute inset-0">
+                <div className="absolute left-3 top-3 flex flex-col gap-2">
+                  <div className="hud-badge">
+                    <Battery className="w-4 h-4 text-sky-300" />
+                    <span className="text-xs font-semibold">{batteryPct}%</span>
+                  </div>
+                  <div className="hud-badge">
+                    <HeartPulse className="w-4 h-4 text-rose-300" />
+                    <span className="text-xs font-semibold">{heartBpm} bpm</span>
+                  </div>
+                </div>
+                <div className="absolute left-1/2 -translate-x-1/2 top-6">
+                  <div className="hud-time select-none">{timeStr}</div>
+                </div>
+                <div className="absolute right-3 top-3">
+                  <div className="hud-card min-w-[112px]">
+                    <div className="flex items-center gap-1">
+                      <Sun className="w-4 h-4 text-yellow-300" />
+                      <span className="text-xs font-bold">25°C</span>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between text-[10px] text-white/80">
+                      <span className="flex items-center gap-1">Th <CloudRain className="w-3 h-3 text-sky-300" /> 20°C</span>
+                      <span>Fr 26°C</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <VanillaHologramAbout
                 panels={[
                   { src: '/1.jpg', alt: 'Mohamed Atef portrait' },
