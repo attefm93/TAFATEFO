@@ -65,7 +65,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
         const closeness = Math.cos(rad);
         const blur = Math.max(0, (1 - Math.abs(closeness)) * maxBlur);
         card.style.setProperty('--vhg-blur', `${blur.toFixed(2)}px`);
-        card.style.transform = `rotateY(${angle}deg) translateZ(${z}px) translateY(${y}px) rotateY(${-angle}deg)`;
+        card.style.transform = `translate(-50%, -50%) rotateX(-6deg) rotateY(${angle}deg) translateZ(${z}px) translateY(${y}px) rotateY(${-angle}deg)`;
       });
     };
     layoutCards();
