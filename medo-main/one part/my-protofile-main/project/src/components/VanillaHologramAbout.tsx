@@ -19,54 +19,21 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
   useEffect(() => {
     const gallery = galleryRef.current!;
     const root = rootRef.current!;
-    const stage = root.querySelector('.vhg-stage') as HTMLDivElement;
     // Cleanup any previous
     gallery.innerHTML = '';
-    // Remove any prior center card
-    const prevCenter = stage.querySelector('.vhg-center');
-    if (prevCenter) prevCenter.remove();
-
-    // Build center card (first image) if available
-    if (panels.length > 0) {
-      const p = panels[0];
-      const center = document.createElement('figure');
-      center.className = 'vhg-card vhg-center';
-      (center as any).dataset.index = '0';
-
-      const inner = document.createElement('div');
-      inner.className = 'vhg-inner';
-      inner.style.animationDelay = `0s`;
-
-      const img = document.createElement('img');
-      img.src = p.src;
-      img.alt = p.alt || 'Center Image';
-      img.loading = 'lazy';
-
-      const shadow = document.createElement('div');
-      shadow.className = 'vhg-shadow';
-
-      inner.appendChild(img);
-      center.appendChild(inner);
-      center.appendChild(shadow);
-      // position in center with slight tilt
-      center.style.transform = 'translate(-50%, -50%) rotateX(-8deg) translateZ(0px)';
-      stage.appendChild(center);
-    }
-
-    // Build orbit cards (remaining images)
-    const orbitPanels = panels.slice(1);
-    orbitPanels.forEach((p, i) => {
+    // Build orbit cards (all images orbit)
+    panels.forEach((p, i) => {
       const card = document.createElement('figure');
       card.className = 'vhg-card';
-      (card as any).dataset.index = String(i + 1);
+      (card as any).dataset.index = String(i);
 
       const inner = document.createElement('div');
       inner.className = 'vhg-inner';
-      inner.style.animationDelay = `${(i + 1) * 0.08}s`;
+      inner.style.animationDelay = `${i * 0.08}s`;
 
       const img = document.createElement('img');
       img.src = p.src;
-      img.alt = p.alt || `Image ${i + 2}`;
+      img.alt = p.alt || `Image ${i + 1}`;
       img.loading = 'lazy';
 
       const shadow = document.createElement('div');
@@ -85,8 +52,8 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       const rect = gallery.getBoundingClientRect();
       const w = Math.min(rect.width, rect.height) || window.innerWidth; // ring fits the square
       const isNarrow = w < 520;
-      const radius = w * (isNarrow ? 0.36 : 0.42);
-      const spreadY = isNarrow ? 6 : 10;
+      const radius = w * (isNarrow ? 0.28 : 0.32); // tighter radius to shrink left/right gap
+      const spreadY = isNarrow ? 4 : 6; // less vertical spread
       const maxBlur = isNarrow ? 2.2 : 2.8; // depth of field amount
       cards.forEach((card, i) => {
         const t = N === 0 ? 0 : i / N; // 0..(N-1)/N
@@ -160,8 +127,6 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       root.removeEventListener('touchmove', onTouchMoveEvt as any);
       root.removeEventListener('click', onClick);
       window.removeEventListener('resize', layoutCards);
-      const c = stage.querySelector('.vhg-center');
-      if (c) c.remove();
     };
   }, [panels]);
 
