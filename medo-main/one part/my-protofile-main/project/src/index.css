@@ -414,6 +414,14 @@
     animation: bob 6.5s ease-in-out infinite;
     filter: blur(var(--vhg-blur, 0px)); /* عمق مجال متدرج */
   }
+  .vhg-card.is-focus .vhg-inner {
+    transition: transform .35s cubic-bezier(.2,.9,.2,1), box-shadow .35s ease;
+    transform: scale(1.12);
+    box-shadow:
+      inset 0 0 16px rgba(255,255,255,0.08),
+      0 12px 36px rgba(0,0,0,0.45),
+      0 0 26px rgba(34,230,255,.45);
+  }
   .vhg-inner::before {
     content: "";
     position: absolute; inset: 0;

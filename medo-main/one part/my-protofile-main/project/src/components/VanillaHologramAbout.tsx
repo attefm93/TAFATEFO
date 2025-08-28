@@ -69,6 +69,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
     // Parallax orbit on pointer move
     const state = { rx: 0, ry: 0, trx: 0, try: 0, spin: 0 };
     const damp = 0.06;
+    let focusedIdx: number | null = null;
     const onPointerMove = (clientX: number, clientY: number) => {
       const rect = gallery.getBoundingClientRect();
       const x = (clientX - rect.left) / rect.width;
@@ -96,6 +97,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       }
       card.classList.toggle('is-focus');
       (card as any).dataset.boost = card.classList.contains('is-focus') ? '1' : '0';
+      focusedIdx = card.classList.contains('is-focus') ? idx : null;
       if (onSelect && idx >= 0) onSelect(idx);
     };
 
@@ -121,8 +123,9 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
     const raf = () => {
       state.ry += (state.try - state.ry) * damp;
       state.rx += (state.trx - state.rx) * damp;
-      // auto spin + inertia from drag
-      state.spin += 0.35 + vel; // base auto spin
+      // auto spin + inertia from drag; slow when focused
+      const baseAuto = focusedIdx !== null ? 0.04 : 0.35;
+      state.spin += baseAuto + vel;
       vel *= 0.94; // decay
 
       // Update each card transform to include spin so they keep facing camera
@@ -134,6 +137,14 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
         const boost = (card as any).dataset.boost === '1' ? 120 : 0;
         card.style.transform = `rotateY(${baseAngle}deg) translateZ(${ringRadius + boost}px) translateY(${y}px) rotateY(${-baseAngle}deg)`;
       });
+
+      // If focused, ease spin so the focused card faces camera (angle ~ 0)
+      if (focusedIdx !== null) {
+        const target = -cardAngles[focusedIdx];
+        let diff = target - state.spin;
+        diff = ((diff + 540) % 360) - 180; // shortest path
+        state.spin += diff * 0.08;
+      }
 
       // Subtle tilt of the whole gallery for parallax
       gallery.style.transform = `rotateY(${state.ry}deg) rotateX(${state.rx}deg)`;
