@@ -356,6 +356,13 @@ function Contact() {
       setSubmitting(true);
       const { error } = await supabase.from('contact_messages').insert(payload);
       if (error) throw error;
+      try {
+        await fetch('/.netlify/functions/contact-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch {}
       alert('Message sent!');
       (e.target as HTMLFormElement).reset();
     } catch (err: any) {
