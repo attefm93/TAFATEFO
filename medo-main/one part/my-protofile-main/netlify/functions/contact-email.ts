@@ -10,7 +10,7 @@ type ContactPayload = {
 
 const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || '';
 const CONTACT_FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || '';
-const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
@@ -33,8 +33,11 @@ export const handler: Handler = async (event) => {
     if (!CONTACT_TO_EMAIL) {
       return { statusCode: 500, body: 'CONTACT_TO_EMAIL is not configured' };
     }
-    if (!RESEND_API_KEY) {
-      return { statusCode: 500, body: 'RESEND_API_KEY is not configured' };
+    if (!SENDGRID_API_KEY) {
+      return { statusCode: 500, body: 'SENDGRID_API_KEY is not configured' };
+    }
+    if (!CONTACT_FROM_EMAIL) {
+      return { statusCode: 500, body: 'CONTACT_FROM_EMAIL is not configured' };
     }
 
     const body: ContactPayload = JSON.parse(event.body || '{}');
@@ -57,19 +60,25 @@ export const handler: Handler = async (event) => {
       </div>
     `;
 
-    const resp = await fetch('https://api.resend.com/emails', {
+    const resp = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Authorization': `Bearer ${SENDGRID_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: CONTACT_FROM_EMAIL || 'Portfolio <onboarding@resend.dev>',
-        to: [CONTACT_TO_EMAIL],
-        subject,
-        text,
-        html,
-        reply_to: CONTACT_TO_EMAIL,
+        personalizations: [
+          {
+            to: [{ email: CONTACT_TO_EMAIL }],
+            subject,
+          },
+        ],
+        from: { email: CONTACT_FROM_EMAIL, name: 'Portfolio Contact' },
+        reply_to: { email: CONTACT_TO_EMAIL },
+        content: [
+          { type: 'text/plain', value: text },
+          { type: 'text/html', value: html },
+        ],
       }),
     });
 
