@@ -1,5 +1,5 @@
 import React from 'react';
-import HologramTriptych from '../components/HologramTriptych';
+import FloatingUI3Cards from '../components/FloatingUI3Cards';
 
 export default function About() {
   return (
@@ -13,8 +13,8 @@ export default function About() {
               'radial-gradient(900px 540px at 10% 0%, rgba(59,130,246,0.12), rgba(0,0,0,0)),'+
               'radial-gradient(600px 400px at 90% 100%, rgba(236,72,153,0.10), rgba(0,0,0,0))'
           }} />
-          <HologramTriptych
-            panels={[
+          <FloatingUI3Cards
+            cards={[
               {
                 src: '/1.jpg',
                 alt: 'Mohamed Atef portrait',
