@@ -58,11 +58,11 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       const isNarrow = w < 520;
       // احسب نصف القطر ليتساوى طول القوس مع عرض الكارت تقريباً (فجوة ~ صفر)
       const innerEl = gallery.querySelector('.vhg-inner') as HTMLElement | null;
-      const cardWidth = innerEl?.offsetWidth ?? (isNarrow ? 140 : 180);
-      const theta = (2 * Math.PI) / N;
-      const rFromWidth = cardWidth / (2 * Math.sin(theta / 2));
-      ringRadius = Math.max(140, rFromWidth - 4); // -4 لتلاشي أي فجوة صغيرة
-      spreadY = isNarrow ? 2 : 4;
+      const cardWidth = innerEl?.offsetWidth ?? (isNarrow ? 120 : 160);
+      const theta = (2 * Math.PI) / N; // زاوية كل كارت بالراديان
+      const rFromArc = cardWidth / theta; // اجعل طول القوس = عرض الكارت
+      ringRadius = Math.max(120, rFromArc - 2); // -2 لتلاشي فجوة شبه صفر
+      spreadY = isNarrow ? 1 : 2;
       cardAngles.length = 0;
       cards.forEach((_, i) => {
         const angle = (i / N) * 360; // full ring
@@ -140,8 +140,8 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
         const baseAngle = cardAngles[i % N] + state.spin;
         const y = Math.sin(((i / N) * Math.PI * 2) + (state.spin * Math.PI / 180)) * spreadY;
         const boost = (card as any).dataset.boost === '1' ? 120 : 0;
-        // roll effect: أدر الكرت حول محوره أثناء الدوران
-        card.style.transform = `rotateY(${baseAngle}deg) translateZ(${ringRadius + boost}px) translateY(${y}px) rotateY(${-baseAngle}deg) rotateZ(${baseAngle}deg)`;
+        // Cylinder facets: لا نعكس الدوران حتى تلتصق الحواف وتبدو كأسطوانة
+        card.style.transform = `rotateY(${baseAngle}deg) translateZ(${ringRadius + boost}px) translateY(${y}px)`;
       });
 
       // If focused, ease spin so the focused card faces camera (angle ~ 0)

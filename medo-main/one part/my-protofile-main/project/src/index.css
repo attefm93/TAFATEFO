@@ -398,9 +398,9 @@
   /* removed offset; we'll center using the square container */
   .vhg-card { position: absolute; transform-style: preserve-3d; will-change: transform; }
   .vhg-inner {
-    width: clamp(120px, 20vw, 180px); /* أصغر بوضوح */
+    width: clamp(110px, 16vw, 160px); /* أنسب للأسطوانة */
     aspect-ratio: 3 / 4.6; /* أطول أكثر */
-    padding: 20px; /* تصغير الصورة داخلياً أكثر */
+    padding: 18px; /* حافة صغيرة بين الوجوه */
     border-radius: 18px;
     overflow: hidden;
     background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
@@ -416,7 +416,7 @@
   }
   .vhg-card.is-focus .vhg-inner {
     transition: transform .35s cubic-bezier(.2,.9,.2,1), box-shadow .35s ease;
-    transform: scale(1.12);
+    transform: scale(1.08);
     box-shadow:
       inset 0 0 16px rgba(255,255,255,0.08),
       0 12px 36px rgba(0,0,0,0.45),
