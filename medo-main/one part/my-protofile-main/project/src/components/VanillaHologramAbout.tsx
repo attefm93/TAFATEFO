@@ -26,6 +26,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       const card = document.createElement('figure');
       card.className = 'vhg-card';
       (card as any).dataset.index = String(i);
+      (card as any).dataset.boost = '0';
 
       const inner = document.createElement('div');
       inner.className = 'vhg-inner';
@@ -45,28 +46,28 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       gallery.appendChild(card);
     });
 
-    // Layout cards on a semi-circle
-    const layoutCards = () => {
+    // Prepare ring layout: full 360°; transforms computed each frame to allow spinning
+    let ringRadius = 420;
+    let spreadY = 10;
+    const cardAngles: number[] = [];
+    const computeLayout = () => {
       const cards = Array.from(gallery.querySelectorAll<HTMLElement>('.vhg-card'));
       const N = cards.length || 1;
       const rect = gallery.getBoundingClientRect();
       const w = rect.width || window.innerWidth;
       const isNarrow = w < 520;
-      const arc = isNarrow ? 90 : 110; // tighter to fit box
-      const radius = w * (isNarrow ? 0.36 : 0.42);
-      const spreadY = isNarrow ? 8 : 12;
-      cards.forEach((card, i) => {
-        const t = N === 1 ? 0.5 : i / (N - 1);
-        const angle = (t - 0.5) * arc; // -arc/2 .. +arc/2
-        const y = Math.sin((i / N) * Math.PI * 2) * spreadY;
-        const z = radius;
-        card.style.transform = `rotateY(${angle}deg) translateZ(${z}px) translateY(${y}px) rotateY(${-angle}deg)`;
+      ringRadius = w * (isNarrow ? 0.36 : 0.42);
+      spreadY = isNarrow ? 6 : 10;
+      cardAngles.length = 0;
+      cards.forEach((_, i) => {
+        const angle = (i / N) * 360; // full ring
+        cardAngles.push(angle);
       });
     };
-    layoutCards();
+    computeLayout();
 
     // Parallax orbit on pointer move
-    const state = { rx: 0, ry: 0, trx: 0, try: 0 };
+    const state = { rx: 0, ry: 0, trx: 0, try: 0, spin: 0 };
     const damp = 0.06;
     const onPointerMove = (clientX: number, clientY: number) => {
       const rect = gallery.getBoundingClientRect();
@@ -81,7 +82,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       if (t) onPointerMove(t.clientX, t.clientY);
     };
 
-    // Click focus toggle
+    // Click focus toggle (boost forward)
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       const card = target?.closest('.vhg-card') as HTMLElement | null;
@@ -89,21 +90,52 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       const idxStr = (card as any).dataset?.index as string | undefined;
       const idx = idxStr ? parseInt(idxStr, 10) : -1;
       const focused = gallery.querySelector('.vhg-card.is-focus') as HTMLElement | null;
-      if (focused && focused !== card) focused.classList.remove('is-focus');
+      if (focused && focused !== card) {
+        focused.classList.remove('is-focus');
+        (focused as any).dataset.boost = '0';
+      }
       card.classList.toggle('is-focus');
-      card.style.transition = 'transform .35s cubic-bezier(.2,.9,.2,1)';
-      const t = card.style.transform.replace(') translateZ(', ')  translateZ(');
-      const boost = card.classList.contains('is-focus') ? 120 : 0;
-      const m = /translateZ\(([-\d.]+)px\)/.exec(t);
-      const baseZ = m ? parseFloat(m[1]) : 0;
-      card.style.transform = t.replace(/translateZ\(([-\d.]+)px\)/, `translateZ(${baseZ + boost}px)`);
-      window.setTimeout(() => (card.style.transition = ''), 400);
+      (card as any).dataset.boost = card.classList.contains('is-focus') ? '1' : '0';
       if (onSelect && idx >= 0) onSelect(idx);
+    };
+
+    // Drag to speed up/slow down spin
+    let dragging = false;
+    let lastX = 0;
+    let vel = 0; // deg/frame
+    const onDown = (e: PointerEvent | MouseEvent | TouchEvent) => {
+      dragging = true;
+      if ('clientX' in e) lastX = (e as PointerEvent).clientX;
+      else if ('touches' in e && (e as TouchEvent).touches[0]) lastX = (e as TouchEvent).touches[0].clientX;
+    };
+    const onUp = () => { dragging = false; };
+    const onMove = (e: PointerEvent | MouseEvent | TouchEvent) => {
+      if (!dragging) return;
+      let cx = lastX;
+      if ('clientX' in e) cx = (e as PointerEvent).clientX;
+      else if ('touches' in e && (e as TouchEvent).touches[0]) cx = (e as TouchEvent).touches[0].clientX;
+      const dx = cx - lastX; lastX = cx;
+      vel = dx * 0.15; // sensitivity
     };
 
     const raf = () => {
       state.ry += (state.try - state.ry) * damp;
       state.rx += (state.trx - state.rx) * damp;
+      // auto spin + inertia from drag
+      state.spin += 0.35 + vel; // base auto spin
+      vel *= 0.94; // decay
+
+      // Update each card transform to include spin so they keep facing camera
+      const cards = Array.from(gallery.querySelectorAll<HTMLElement>('.vhg-card'));
+      const N = cards.length || 1;
+      cards.forEach((card, i) => {
+        const baseAngle = cardAngles[i % N] + state.spin;
+        const y = Math.sin(((i / N) * Math.PI * 2) + (state.spin * Math.PI / 180)) * spreadY;
+        const boost = (card as any).dataset.boost === '1' ? 120 : 0;
+        card.style.transform = `rotateY(${baseAngle}deg) translateZ(${ringRadius + boost}px) translateY(${y}px) rotateY(${-baseAngle}deg)`;
+      });
+
+      // Subtle tilt of the whole gallery for parallax
       gallery.style.transform = `rotateY(${state.ry}deg) rotateX(${state.rx}deg)`;
       requestAnimationFrame(raf);
     };
@@ -112,7 +144,11 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
     root.addEventListener('pointermove', onPointerMoveEvt);
     root.addEventListener('touchmove', onTouchMoveEvt, { passive: true });
     root.addEventListener('click', onClick);
-    window.addEventListener('resize', layoutCards);
+    root.addEventListener('pointerdown', onDown as any);
+    root.addEventListener('pointerup', onUp as any);
+    root.addEventListener('pointercancel', onUp as any);
+    root.addEventListener('pointermove', onMove as any);
+    window.addEventListener('resize', computeLayout);
     const id = requestAnimationFrame(raf);
 
     return () => {
@@ -120,7 +156,11 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       root.removeEventListener('pointermove', onPointerMoveEvt);
       root.removeEventListener('touchmove', onTouchMoveEvt as any);
       root.removeEventListener('click', onClick);
-      window.removeEventListener('resize', layoutCards);
+      root.removeEventListener('pointerdown', onDown as any);
+      root.removeEventListener('pointerup', onUp as any);
+      root.removeEventListener('pointercancel', onUp as any);
+      root.removeEventListener('pointermove', onMove as any);
+      window.removeEventListener('resize', computeLayout);
     };
   }, [panels]);
 
