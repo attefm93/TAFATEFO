@@ -1,10 +1,20 @@
 import React from 'react';
+import HologramGallery from '../components/HologramGallery';
 
 export default function About() {
   return (
     <div className="relative z-10 min-h-screen px-6 py-28">
       <div className="mx-auto max-w-5xl space-y-10">
         <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-green-400 via-pink-400 to-blue-500 bg-clip-text text-transparent">About Me</h3>
+
+        <div className="relative rounded-3xl border border-white/10 bg-black/30 backdrop-blur-xl p-4 md:p-6 overflow-hidden">
+          <div className="absolute -inset-20 pointer-events-none opacity-60" aria-hidden="true" style={{
+            background:
+              'radial-gradient(900px 540px at 10% 0%, rgba(59,130,246,0.12), rgba(0,0,0,0)),'+
+              'radial-gradient(600px 400px at 90% 100%, rgba(236,72,153,0.10), rgba(0,0,0,0))'
+          }} />
+          <HologramGallery />
+        </div>
 
         <div className="relative group rounded-2xl border border-white/10 bg-white/5 overflow-hidden shadow-lg">
           <span className="absolute -inset-6 rounded-3xl blur-3xl opacity-40 bg-gradient-to-r from-green-400/30 via-pink-400/30 to-blue-500/30" aria-hidden="true" />
