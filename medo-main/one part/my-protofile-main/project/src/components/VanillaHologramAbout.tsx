@@ -47,11 +47,12 @@ export default function VanillaHologramAbout({ panels }: Props) {
     const layoutCards = () => {
       const cards = Array.from(gallery.querySelectorAll<HTMLElement>('.vhg-card'));
       const N = cards.length || 1;
-      const sceneW = window.innerWidth;
-      const isMobile = sceneW < 640;
-      const arc = isMobile ? 120 : 150; // degrees
-      const radius = Math.min(window.innerWidth, 1200) * (isMobile ? 0.42 : 0.55);
-      const spreadY = isMobile ? 18 : 28;
+      const rect = gallery.getBoundingClientRect();
+      const w = rect.width || window.innerWidth;
+      const isNarrow = w < 520;
+      const arc = isNarrow ? 110 : 140; // degrees, tighter arc to fit inside column box
+      const radius = w * (isNarrow ? 0.45 : 0.5);
+      const spreadY = isNarrow ? 12 : 20;
       cards.forEach((card, i) => {
         const t = N === 1 ? 0.5 : i / (N - 1);
         const angle = (t - 0.5) * arc; // -arc/2 .. +arc/2
