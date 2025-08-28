@@ -389,7 +389,7 @@
     transform-style: preserve-3d;
     transition: transform .25s ease-out;
     filter: drop-shadow(0 10px 24px rgba(0,0,0,0.35));
-    translate: 6% 0; /* ازاحة بسيطة لليمين */
+    translate: 0 12px; /* نزول بسيط تحت الساعة */
   }
   /* removed offset; we'll center using the square container */
   .vhg-card { position: absolute; transform-style: preserve-3d; will-change: transform; }
