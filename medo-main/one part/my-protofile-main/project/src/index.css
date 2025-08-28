@@ -389,16 +389,16 @@
     transform-style: preserve-3d;
     transition: transform .25s cubic-bezier(.2,.8,.2,1);
     filter: drop-shadow(0 10px 24px rgba(0,0,0,0.35));
-    translate: 30% 110px; /* يمين أكثر بشوية صغيرين */
+    translate: 34% 110px; /* يمين أكثر */
   }
 
   @media (max-width: 640px) {
-    .vhg-gallery { translate: 22% 80px; }
+    .vhg-gallery { translate: 24% 80px; }
   }
   /* removed offset; we'll center using the square container */
   .vhg-card { position: absolute; transform-style: preserve-3d; will-change: transform; }
   .vhg-inner {
-    width: clamp(110px, 16vw, 160px); /* أنسب للأسطوانة */
+    width: clamp(140px, 20vw, 200px); /* تكبير الوجوه قليلاً */
     aspect-ratio: 3 / 4.6; /* أطول أكثر */
     padding: 18px; /* حافة صغيرة بين الوجوه */
     border-radius: 18px;
