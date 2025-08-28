@@ -61,7 +61,7 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       const cardWidth = innerEl?.offsetWidth ?? (isNarrow ? 120 : 160);
       const theta = (2 * Math.PI) / N; // زاوية كل كارت بالراديان
       const rFromArc = cardWidth / theta; // اجعل طول القوس = عرض الكارت
-      ringRadius = Math.max(120, rFromArc - 2); // -2 لتلاشي فجوة شبه صفر
+      ringRadius = Math.max(120, rFromArc + 10); // +10 فراغ بسيط بين الوجوه
       spreadY = isNarrow ? 1 : 2;
       cardAngles.length = 0;
       cards.forEach((_, i) => {

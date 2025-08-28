@@ -378,7 +378,7 @@
     position: relative;
     display: grid;
     place-items: center;
-    height: min(66vh, 680px); /* مساحة أكبر للكروت الأطول */
+    height: min(72vh, 760px); /* مساحة أكبر للكروت الأطول */
     perspective: 1100px;
     perspective-origin: 50% 40%;
   }
@@ -398,9 +398,9 @@
   /* removed offset; we'll center using the square container */
   .vhg-card { position: absolute; transform-style: preserve-3d; will-change: transform; }
   .vhg-inner {
-    width: clamp(140px, 20vw, 200px); /* تكبير الوجوه قليلاً */
-    aspect-ratio: 3 / 4.6; /* أطول أكثر */
-    padding: 18px; /* حافة صغيرة بين الوجوه */
+    width: clamp(200px, 26vw, 280px); /* أكبر */
+    aspect-ratio: 3 / 5.6; /* أطول */
+    padding: 20px; /* حافة صغيرة بين الوجوه */
     border-radius: 18px;
     overflow: hidden;
     background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
