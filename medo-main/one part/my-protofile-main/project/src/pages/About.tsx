@@ -18,9 +18,10 @@ export default function About() {
             <div className="rounded-2xl border border-white/10 bg-black/20 p-3 aspect-square grid place-items-center">
               <VanillaHologramAbout
                 panels={[
-                  { src: '/1.jpg', alt: 'Mohamed Atef portrait' },
-                  { src: '/2.jpg', alt: 'Collaboration and connection' },
-                  { src: '/6.jpg', alt: 'Nile University highlight' },
+                  { src: '/1.jpg', alt: 'Portrait' },
+                  { src: '/2.jpg', alt: 'Connection' },
+                  { src: '/3.jpg', alt: 'Showcase' },
+                  { src: '/6.jpg', alt: 'Nile University' },
                 ]}
                 onSelect={(i) => setActiveIdx(i)}
               />
