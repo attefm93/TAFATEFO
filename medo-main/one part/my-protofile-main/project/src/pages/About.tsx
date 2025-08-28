@@ -59,25 +59,37 @@ export default function About() {
 
               <VanillaHologramAbout
                 panels={[
-                  { src: '/1.jpg', alt: 'Watch gallery 1' },
-                  { src: '/2.jpg', alt: 'Watch gallery 2' },
-                  { src: '/3.jpg', alt: 'Watch gallery 3' },
-                  { src: '/4.jpg', alt: 'Watch gallery 4' },
-                  { src: '/5.jpg', alt: 'Watch gallery 5' },
-                  { src: '/6.jpg', alt: 'Watch gallery 6' },
+                  { src: '/1.jpg', alt: 'Intro' },
+                  { src: '/3.jpg', alt: 'Thanks' },
+                  { src: '/5.jpg', alt: 'Contacts' },
+                  { src: '/6.jpg', alt: 'Nile University' },
                 ]}
                 onSelect={(i) => setActiveIdx(i)}
               />
             </div>
             <div className="space-y-4 md:space-y-5">
               {activeIdx === 0 && (
-                <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">Hello! My name is Mohamed Atef, and I am a dedicated software developer with a strong passion for building creative digital solutions. From the very first time I wrote a line of code, I knew that programming was not just a career choice for me, but a lifelong journey of learning, problem-solving, and innovation.</p></div>
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">Hello! My name is MOHAMED ATEF, and I am a dedicated software developer with a strong passion for building creative digital solutions. From the very first time I wrote a line of code, I knew that programming was not just a career choice for me, but a lifelong journey of learning, problem-solving, and innovation. Over the years, I’ve developed a deep interest in designing systems that are both efficient and user-friendly. My goal is always to turn ideas into reality through technology, and to create projects that have a real impact.</p></div>
               )}
-              {activeIdx === 1 && (
-                <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">I believe in collaboration and building meaningful connections. If you would like to work together, discuss ideas, or simply connect, I’m always open to conversations that create impact.</p></div>
+
+              {activeIdx === 3 && (
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">I am proud to be a graduate of Nile University, an institution that has played a key role in shaping my academic and professional journey. My years at the university provided me with a strong technical foundation, critical thinking skills, and exposure to real-world projects that challenged me to think outside the box. At Nile University, I not only studied the theoretical aspects of computer science but also applied my knowledge through hands-on experiences, teamwork, and research opportunities. It was here that I learned the value of persistence, collaboration, and innovation in the field of technology.</p></div>
               )}
+
               {activeIdx === 2 && (
-                <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">I am proud to be a graduate of Nile University, which shaped my academic and professional journey with a strong technical foundation, critical thinking, and real-world projects.</p></div>
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5 space-y-3">
+                  <p className="text-white/90 text-sm md:text-base leading-7">Get in touch with me through any of the following:</p>
+                  <div className="flex flex-wrap gap-3">
+                    <a className="hud-badge !pointer-events-auto" href="https://www.facebook.com/share/1Cku3ivj8f/" target="_blank" rel="noreferrer">Facebook</a>
+                    <a className="hud-badge !pointer-events-auto" href="https://www.linkedin.com/in/mohamed-atef-5b1a82351?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noreferrer">LinkedIn</a>
+                    <a className="hud-badge !pointer-events-auto" href="https://wa.me/201227866673" target="_blank" rel="noreferrer">WhatsApp: 01227866673</a>
+                    <a className="hud-badge !pointer-events-auto" href="tel:+201227866673">Call Me</a>
+                  </div>
+                </div>
+              )}
+
+              {activeIdx === 1 && (
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5"><p className="text-white/90 text-sm md:text-base leading-7">Thank you so much for visiting my website. Your time and attention mean a lot to me. I hope you enjoyed the experience—feel free to reach out anytime!</p></div>
               )}
             </div>
           </div>
