@@ -56,8 +56,9 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
       const rect = gallery.getBoundingClientRect();
       const w = rect.width || window.innerWidth;
       const isNarrow = w < 520;
-      ringRadius = w * (isNarrow ? 0.36 : 0.42);
-      spreadY = isNarrow ? 10 : 16;
+      // أقرب لبعضهم كأنهم حلقة مغلقة: قلل نصف القطر وخفف تذبذب الـY
+      ringRadius = w * (isNarrow ? 0.28 : 0.34);
+      spreadY = isNarrow ? 4 : 6;
       cardAngles.length = 0;
       cards.forEach((_, i) => {
         const angle = (i / N) * 360; // full ring
