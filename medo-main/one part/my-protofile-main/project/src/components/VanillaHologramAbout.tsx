@@ -71,7 +71,8 @@ export default function VanillaHologramAbout({ panels, onSelect }: Props) {
     const damp = 0.06;
     const onPointerMove = (clientX: number, clientY: number) => {
       const rect = gallery.getBoundingClientRect();
-      const x = (clientX - rect.left) / rect.width;
+      // slight right bias to centre visually
+      const x = (clientX - rect.left) / rect.width + 0.06;
       const y = (clientY - rect.top) / rect.height;
       state.try = (x - 0.5) * 32;
       state.trx = -(y - 0.5) * 10;
